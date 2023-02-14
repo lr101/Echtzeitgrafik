@@ -68,8 +68,6 @@ unsigned int buildVAO() {
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VAO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
 	return VAO;
 }
 
@@ -121,7 +119,7 @@ unsigned int linkShader(unsigned int vertexShader, unsigned int fragmentShader) 
 	}
 	// glGetProgramiv and glGetProgramInfoLog instead
 	// Binding the program to the opengl context as follows
-	glUseProgram(shaderProgram);
+	//glUseProgram(shaderProgram);
 	// We don't need the compiled shader objects anymore as
 	// they are now contained in the program
 	glDeleteShader(vertexShader);
@@ -143,6 +141,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
 	GLFWwindow* window = glfwCreateWindow(800, 600, "Echtzeitgrafik", nullptr, nullptr);
 	if (!window) {
@@ -164,11 +163,27 @@ int main() {
 	unsigned int vertexShader = buildVertexShader(VAO);
 	unsigned int fragmentShader = buildFragmentShader();
 	unsigned int shaderProgram =  linkShader(vertexShader, fragmentShader);
+	unsigned int VBO;
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	unsigned int EBO = buildEBO();
 
-	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	auto debugCallback = [](GLenum source, GLenum type, unsigned int id, GLenum severity,
+		GLsizei length, const char* message, const void* userParam) {
+			std::cerr << "[OpenGL] " << id << ": " << message << std::endl;
+	};
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(debugCallback, nullptr);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 	
 	while (!glfwWindowShouldClose(window)) {
+		std::cout << glGetError() << std::endl;
 		handleEvents(window);
 		glClearColor(0.2f, 0.3f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
