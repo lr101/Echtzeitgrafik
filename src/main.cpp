@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <GeometryBuffer.h>
 #define GLEW_STATIC
 #include <GL/glew.h> // has to be included first!
 #include <GLFW/glfw3.h>
@@ -117,24 +117,11 @@ int main()
         0, 3, 4
     };
 
-    GLuint VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    GeometryBuffer* buffer = new GeometryBuffer();
+    buffer->bind();
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    // Bind EBO
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    buffer->setVertices(vertices);
+    buffer->setIndices(indices);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -167,18 +154,15 @@ int main()
 
         // Draw our first triangle
         glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        //glDrawArrays(GL_TRIANGLES, 0, 6); // We set the count to 6 since we're drawing 6 vertices now (2 triangles); not 3!
+        buffer->bind();
         glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr);
-
         glBindVertexArray(0);
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
     }
     // Properly de-allocate all resources once they've outlived their purpose
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    delete buffer;
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
     return 0;
