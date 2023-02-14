@@ -88,6 +88,10 @@ int main()
 
     GeometryBuffer buffer(vertices, sizeof(vertices), indices, sizeof(indices), 9);
 
+    // For calculating fps
+    GLdouble lastTime = glfwGetTime();
+    GLuint nbFrames = 0;
+
     while (!glfwWindowShouldClose(window))
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
@@ -103,6 +107,15 @@ int main()
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
+
+        // Calc fps
+        GLdouble currentTime = glfwGetTime();
+        nbFrames++;
+        if (currentTime - lastTime >= 1.0) {
+            std::cout << "fps = " << double(nbFrames) << std::endl;
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
     }
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
