@@ -8,23 +8,14 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-typedef GLuint(*GL_CREATEPROGRAM) (void);
-const char* functionName = "glCreateProgram";
+// Function prototypes
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
+// Window dimensions
+const GLuint WIDTH = 800, HEIGHT = 600;
 
-float vertices[] = {
-		 0.5f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f   // top left 
-};
-
-unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 3,  // first Triangle
-		1, 2, 3   // second Triangle
-};
-
-const char* vertexShaderSource =
+// Shaders
+const GLchar* vertexShaderSource =
 "#version 330 core\n"
 "layout (location = 0) in vec3 in_position;\n"
 "out vec3 color;\n"
@@ -33,9 +24,7 @@ const char* vertexShaderSource =
 " gl_Position = vec4(in_position, 1.0);\n"
 " color = in_position;\n"
 "}\0";
-
-const char* fragmentShaderSource =
-"#version 330 core\n"
+const GLchar* fragmentShaderSource = "#version 330 core\n"
 "in vec3 color;\n"
 "layout (location = 0) out vec4 out_color;\n"
 "\n"
@@ -43,156 +32,134 @@ const char* fragmentShaderSource =
 " out_color = vec4(color, 1.0);\n"
 "}\0";
 
-void handleEvents(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+// The MAIN function, from here we start the application and run the game loop
+int main()
 {
-	glViewport(0, 0, width, height);
+    // Init GLFW
+    glfwInit();
+    // Set all the required options for GLFW
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+    // Create a GLFWwindow object that we can use for GLFW's functions
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
+    glfwMakeContextCurrent(window);
+
+    // Set the required callback functions
+    glfwSetKeyCallback(window, key_callback);
+
+    // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
+    glewExperimental = GL_TRUE;
+    // Initialize GLEW to setup the OpenGL Function pointers
+    glewInit();
+
+    // Define the viewport dimensions
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    glViewport(0, 0, width, height);
+
+
+    // Build and compile our shader program
+    // Vertex shader
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+    // Check for compile time errors
+    GLint success;
+    GLchar infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+    // Fragment shader
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    // Check for compile time errors
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+    // Link shaders
+    GLuint shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    // Check for linking errors
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    }
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+
+    // Set up vertex data (and buffer(s)) and attribute pointers
+    // We add a new set of vertices to form a second triangle (a total of 6 vertices); the vertex attribute configuration remains the same (still one 3-float position vector per vertex)
+    GLfloat vertices[] = {
+        // First triangle
+        -0.9f, -0.5f, 0.0f,  // Left 
+        -0.0f, -0.5f, 0.0f,  // Right
+        -0.45f, 0.5f, 0.0f,  // Top 
+        // Second triangle
+         0.0f, -0.5f, 0.0f,  // Left
+         0.9f, -0.5f, 0.0f,  // Right
+         0.45f, 0.5f, 0.0f   // Top 
+    };
+    GLuint VBO, VAO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    // Bind the Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0); // Note that this is allowed, the call to glVertexAttribPointer registered VBO as the currently bound vertex buffer object so afterwards we can safely unbind
+
+    glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
+
+    // Game loop
+    while (!glfwWindowShouldClose(window))
+    {
+        // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
+        glfwPollEvents();
+
+        // Render
+        // Clear the colorbuffer
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Draw our first triangle
+        glUseProgram(shaderProgram);
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6); // We set the count to 6 since we're drawing 6 vertices now (2 triangles); not 3!
+        glBindVertexArray(0);
+
+        // Swap the screen buffers
+        glfwSwapBuffers(window);
+    }
+    // Properly de-allocate all resources once they've outlived their purpose
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    // Terminate GLFW, clearing any resources allocated by GLFW.
+    glfwTerminate();
+    return 0;
 }
 
-
-void dispay() {
-	
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-}
-
-unsigned int buildVAO() {
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VAO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	return VAO;
-}
-
-unsigned int buildVertexShader(unsigned int VAO) {
-	// build and compile our shader program
-	// ------------------------------------
-	// vertex shader
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, nullptr);
-	glCompileShader(vertexShader);
-	// check for shader compile errors
-	int success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-		std::cerr << "Vertex-Shader compilation failed!" << std::endl << infoLog << std::endl;
-	}
-	return vertexShader;
-}
-
-unsigned int buildFragmentShader() {
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, nullptr);
-	glCompileShader(fragmentShader);
-	// check for shader compile errors
-	int success;
-	char infoLog[512];
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-		std::cerr << "Fragment-Shader compilation failed!" << std::endl << infoLog << std::endl;
-	}
-	return fragmentShader;
-}
-
-unsigned int linkShader(unsigned int vertexShader, unsigned int fragmentShader) {
-	unsigned int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-	// Check link status like before, but using the functions
-	int success;
-	char infoLog[512];
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-	// glGetProgramiv and glGetProgramInfoLog instead
-	// Binding the program to the opengl context as follows
-	//glUseProgram(shaderProgram);
-	// We don't need the compiled shader objects anymore as
-	// they are now contained in the program
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-	return shaderProgram;
-}
-
-unsigned int buildEBO() {
-	unsigned int EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	return EBO;
-}
-
-int main() {
-	std::cout << "TEST" << std::endl;
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Echtzeitgrafik", nullptr, nullptr);
-	if (!window) {
-		std::cerr << "Creation of window failed" << std::endl;
-		glfwTerminate();
-		return 1;
-	}
-	glfwMakeContextCurrent(window);
-	GLenum error = glewInit();
-	if (error != GLEW_OK) {
-		std::cerr << "Initialization of glew failed" << glewGetErrorString(error) << std::endl;
-		glfwTerminate();
-		return 1;
-	}
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glViewport(0, 0, 800, 600);
-
-	unsigned int VAO = buildVAO();
-	unsigned int vertexShader = buildVertexShader(VAO);
-	unsigned int fragmentShader = buildFragmentShader();
-	unsigned int shaderProgram =  linkShader(vertexShader, fragmentShader);
-	unsigned int VBO;
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	unsigned int EBO = buildEBO();
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	auto debugCallback = [](GLenum source, GLenum type, unsigned int id, GLenum severity,
-		GLsizei length, const char* message, const void* userParam) {
-			std::cerr << "[OpenGL] " << id << ": " << message << std::endl;
-	};
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(debugCallback, nullptr);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	
-	while (!glfwWindowShouldClose(window)) {
-		std::cout << glGetError() << std::endl;
-		handleEvents(window);
-		glClearColor(0.2f, 0.3f, 0.9f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-	glfwTerminate();
-	return 0;
+// Is called whenever a key is pressed/released via GLFW
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
 }
