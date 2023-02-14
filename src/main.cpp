@@ -9,6 +9,7 @@
 #include FT_FREETYPE_H
 
 #include "GeometryBuffer.h"
+#include "Shader.h"
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -33,6 +34,9 @@ const GLchar* fragmentShaderSource = "#version 330 core\n"
 "void main() {\n"
 " out_color = vec4(color, 1.0);\n"
 "}\0";
+
+//const char* vertexShaderName = "shader.vert";
+//const char* fragmentShaderName = "shader.frag";
 
 // The MAIN function, from here we start the application and run the game loop
 int main()
@@ -62,46 +66,9 @@ int main()
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
-
-    // Build and compile our shader program
-    // Vertex shader
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // Check for compile time errors
-    GLint success;
-    GLchar infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    // Fragment shader
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // Check for compile time errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-    // Link shaders
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // Check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
+    const char* vert = "../res/shader.vert";
+    const char* frag = "../res/shader.frag";
+    Shader shader(vert, frag);
 
     // Set up vertex data (and buffer(s)) and attribute pointers
     // We add a new set of vertices to form a second triangle (a total of 6 vertices); the vertex attribute configuration remains the same (still one 3-float position vector per vertex)
@@ -120,7 +87,6 @@ int main()
     };
 
     GeometryBuffer buffer(vertices, sizeof(vertices), indices, sizeof(indices), 9);
-    //GeometryBuffer* buffer = new GeometryBuffer(vertices, sizeof(vertices), indices, sizeof(indices), 9);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -133,13 +99,11 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw our first triangle
-        glUseProgram(shaderProgram);
         buffer.draw();
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
     }
-    //delete buffer;
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
     return 0;
