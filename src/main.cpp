@@ -1,5 +1,5 @@
 #include <iostream>
-#include <GeometryBuffer.h>
+
 #define GLEW_STATIC
 #include <GL/glew.h> // has to be included first!
 #include <GLFW/glfw3.h>
@@ -7,6 +7,8 @@
 #include <glm/glm.hpp>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+#include "GeometryBuffer.h"
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -117,31 +119,9 @@ int main()
         0, 3, 4
     };
 
-    GeometryBuffer* buffer = new GeometryBuffer();
-    buffer->bind();
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    buffer->setVertices(vertices);
-    buffer->setIndices(indices);
+    GeometryBuffer buffer(vertices, sizeof(vertices), indices, sizeof(indices), 9);
+    //GeometryBuffer* buffer = new GeometryBuffer(vertices, sizeof(vertices), indices, sizeof(indices), 9);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
-
-
-    // uncomment this call to draw in wireframe polygons.
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    // render loop
-    // Game loop
     while (!glfwWindowShouldClose(window))
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
@@ -154,15 +134,12 @@ int main()
 
         // Draw our first triangle
         glUseProgram(shaderProgram);
-        buffer->bind();
-        glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, nullptr);
-        glBindVertexArray(0);
+        buffer.draw();
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
     }
-    // Properly de-allocate all resources once they've outlived their purpose
-    delete buffer;
+    //delete buffer;
     // Terminate GLFW, clearing any resources allocated by GLFW.
     glfwTerminate();
     return 0;

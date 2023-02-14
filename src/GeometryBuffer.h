@@ -9,23 +9,24 @@
 #include FT_FREETYPE_H
 
 class GeometryBuffer {
+	GLuint m_vao;
+	GLuint m_vbo;
+	GLuint m_ebo;
+	GLuint vertexAmount;
+
+	void setVertices(GLfloat vertices[], GLuint size);
+	void setIndices(GLuint indices[], GLuint size);
+	void setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset);
+	void bindVAO();
+	void bindVBO();
+	void bindEBO();
+	void unbindVAO();
+	void unbindVBO();
+	void unbindEBO();
+
 public:
-    GeometryBuffer();
+	GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices[], GLuint i_size, GLuint vertexAmount);
+	~GeometryBuffer();
 
-    ~GeometryBuffer();
-
-    void bind();
-
-    void unbind();
-
-    void setVertices(GLfloat vertices[]);
-
-    void setIndices(GLuint indices[]);
-
-    void setAttribute(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset);
-
-private:
-    GLuint m_vao;
-    GLuint m_vbo;
-    GLuint m_ebo;
+	void draw();
 };
