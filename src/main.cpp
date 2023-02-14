@@ -17,26 +17,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
-// Shaders
-const GLchar* vertexShaderSource =
-"#version 330 core\n"
-"layout (location = 0) in vec3 in_position;\n"
-"out vec3 color;\n"
-"void main()\n"
-"{\n"
-" gl_Position = vec4(in_position, 1.0);\n"
-" color = in_position;\n"
-"}\0";
-const GLchar* fragmentShaderSource = "#version 330 core\n"
-"in vec3 color;\n"
-"layout (location = 0) out vec4 out_color;\n"
-"\n"
-"void main() {\n"
-" out_color = vec4(color, 1.0);\n"
-"}\0";
 
-//const char* vertexShaderName = "shader.vert";
-//const char* fragmentShaderName = "shader.frag";
+const char* vertexShader = "../res/shader.vert";
+const char* fragmentShader = "../res/shader.frag";
 
 // The MAIN function, from here we start the application and run the game loop
 int main()
@@ -66,9 +49,7 @@ int main()
     glfwGetFramebufferSize(window, &width, &height);
     glViewport(0, 0, width, height);
 
-    const char* vert = "../res/shader.vert";
-    const char* frag = "../res/shader.frag";
-    Shader shader(vert, frag);
+    Shader shader(vertexShader, fragmentShader);
 
     // Set up vertex data (and buffer(s)) and attribute pointers
     // We add a new set of vertices to form a second triangle (a total of 6 vertices); the vertex attribute configuration remains the same (still one 3-float position vector per vertex)
