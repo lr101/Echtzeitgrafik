@@ -17,6 +17,37 @@ Shader::~Shader() {
 
 }
 
+GLint Shader::getUniform(const char* name) {
+	GLint location = glGetUniformLocation(this->s_prog, name);
+	glUseProgram(this->s_prog);
+	return location;
+}
+
+void Shader::setUniform(const char* name, GLint val)
+{
+	glUniform1i(getUniform(name), val);
+}
+
+void Shader::setUniform(const char* name, GLfloat val)
+{
+	glUniform1f(getUniform(name), val);
+}
+
+void Shader::setUniform(const char* name, glm::vec3 val)
+{
+	glUniform3f(getUniform(name), val.x, val.y, val.z);
+}
+
+void Shader::setUniform(const char* name, glm::vec4 val)
+{
+	glUniform4f(getUniform(name), val.x, val.y, val.z, val.w);
+}
+
+void Shader::setUniform(const char* name, glm::mat4 val)
+{
+	glUniformMatrix4fv(getUniform(name), 1, GL_FALSE, glm::value_ptr(val));
+}
+
 std::string Shader::load(const char* src) {
 	std::string line, text;
 	std::ifstream in(src);
