@@ -14,8 +14,7 @@
 #include "Shader.h"
 
 // Function prototypes
-void key_callback_close(GLFWwindow* window, int key, int scancode, int action, int mode);
-void key_callback_projection(GLFWwindow* window, int key, int scancode, int action, int mode);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 // Window dimensions
 const GLfloat WIDTH = 800.f, HEIGHT = 600.f;
@@ -23,6 +22,8 @@ const GLfloat WIDTH = 800.f, HEIGHT = 600.f;
 const char* vertexShader = "../res/shader.vert";
 const char* fragmentShader = "../res/shader.frag";
 
+
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 glm::mat4 mat_projection;
 bool projection_type = true;
 
@@ -42,8 +43,7 @@ int main()
     glfwMakeContextCurrent(window);
 
     // Set the required callback functions
-    glfwSetKeyCallback(window, key_callback_close);
-    glfwSetKeyCallback(window, key_callback_projection);
+    glfwSetKeyCallback(window, key_callback);
 
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
@@ -73,6 +73,8 @@ int main()
     shader.setUniform("u_model", mat_model);
     shader.setUniform("u_view", mat_view);
     shader.setUniform("u_projection", mat_projection);
+    shader.setUniform("u_lightPos", lightPos);
+    shader.setUniform("u_viewPos", lightPos + glm::vec3(0.0, 1.0, 0.0));
 
     // Set up vertex data (and buffer(s)) and attribute pointers
     // We add a new set of vertices to form a second triangle (a total of 6 vertices); the vertex attribute configuration remains the same (still one 3-float position vector per vertex)
@@ -103,6 +105,12 @@ int main()
     };
 
     GeometryBuffer buffer(vertices, sizeof(vertices), indices, sizeof(indices), sizeof(indices));
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // For calculating fps
     GLdouble lastTime = glfwGetTime();
@@ -148,17 +156,17 @@ int main()
 }
 
 // Is called whenever a key is pressed/released via GLFW
-void key_callback_close(GLFWwindow* window, int key, int scancode, int action, int mode) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GL_TRUE);
-}
+    }
 
-void key_callback_projection(GLFWwindow* window, int key, int scancode, int action, int mode) {
-    if (key = GLFW_KEY_SPACE && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+        GLfloat aspect = WIDTH / HEIGHT;
         if (projection_type) {
-            mat_projection = glm::ortho(-800.f / 600.f, 800.f / 600.f, -1.f, 1.f, 0.1f, 100.f);
+            mat_projection = glm::ortho(-1.f * aspect, aspect, -1.f, 1.f, 0.1f, 100.f);
 		} else {
-			mat_projection = glm::perspective(glm::radians(45.0f), WIDTH / HEIGHT, 0.1f, 1000.0f);
+			mat_projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
 		}
 		projection_type = !projection_type;
 	}
