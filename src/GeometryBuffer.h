@@ -1,4 +1,7 @@
 #include <iostream>
+#include <algorithm>
+#include <iterator>
+#include <vector>
 
 #define GLEW_STATIC
 #include <GL/glew.h> // has to be included first!
@@ -13,9 +16,11 @@ class GeometryBuffer {
 	GLuint m_vbo;
 	GLuint m_ebo;
 	GLuint vertexAmount;
+	std::vector<GLfloat> vertices;
+	std::vector<GLuint> indices;
 
-	void setVertices(GLfloat vertices[], GLuint size);
-	void setIndices(GLuint indices[], GLuint size);
+	void setVertices(GLfloat *vertices, GLuint size);
+	void setIndices(GLuint *indices, GLuint size, GLuint vertexAmount);
 	void setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset);
 	void bindVAO();
 	void bindVBO();
