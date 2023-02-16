@@ -12,6 +12,7 @@
 #include <iostream>
 #include "GeometryBuffer.h"
 #include "Shader.h"
+#include "PointLight.h"
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -68,20 +69,18 @@ int main()
     glm::mat4 mat_view = glm::mat4(1.0f);
     mat_projection = glm::mat4(1.0f);
 
-    //mat_model = glm::rotate(mat_model, glm::radians(40.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     mat_model = glm::scale(mat_model, glm::vec3(1.5f, 1.5f, 1.5f));
-
     mat_view = glm::translate(mat_view, -1.f * viewPos);
-
     mat_projection = glm::perspective(glm::radians(45.0f), WIDTH / HEIGHT, 0.1f, 1000.0f);
 
     shader.setUniform("u_model", mat_model);
     shader.setUniform("u_view", mat_view);
     shader.setUniform("u_projection", mat_projection);
-    shader.setUniform("u_lightPos", viewPos + lightOffset);
     shader.setUniform("u_viewPos", viewPos);
-    shader.setUniform("u_objectColor", glm::vec3(1.f, .5f, .32f));
-    shader.setUniform("u_lightColor", glm::vec3(1.f, 1.f, 1.f));
+    shader.setUniform("u_objectCol", glm::vec3(1.f, .5f, .32f));
+
+    PointLight pointLight(viewPos + lightOffset, glm::vec3(1.f, 1.f, 1.f));
+    pointLight.setUniforms(shader);
 
     GLfloat verticesEBO[] = {
         -0.5f, -0.5f, -0.5f,
