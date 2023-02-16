@@ -1,27 +1,21 @@
 #include "GeometryBuffer.h"
 
 GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices[], GLuint i_size, GLuint vertexAmount) {
+	this->useIndices = true;
+	this->vertexAmount = vertexAmount;
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
 	glGenBuffers(1, &m_ebo);
-	bindVAO();
-	bindVBO();
-	bindEBO();
 	setVertices(vertices, v_size);
 	setIndices(indices, i_size, vertexAmount);
-	unbindVBO();
-	unbindVAO();
-	unbindEBO();
 }
 
 GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint vertexAmount) {
+	this->useIndices = false;
+	this->vertexAmount = vertexAmount;
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
-	bindVAO();
-	bindVBO();
 	setVertices(vertices, v_size);
-	unbindVBO();
-	unbindVAO();
 }
 
 GeometryBuffer::~GeometryBuffer() {
@@ -31,23 +25,50 @@ GeometryBuffer::~GeometryBuffer() {
 }
 
 void GeometryBuffer::setVertices(GLfloat* vertices, GLuint size) {
+	bindVAO();
+	bindVBO();
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+	unbindVAO();
+	unbindVBO();
 }
 
 void GeometryBuffer::setIndices(GLuint* indices, GLuint size, GLuint vertexAmount) {
-	this->vertexAmount = vertexAmount;
+	bindVAO();
+	bindVBO();
+	bindEBO();
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
+	unbindEBO();
+	unbindVAO();
+	unbindVBO();
 }
 
 void GeometryBuffer::setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset) {
+	bindVAO();
+	bindVBO();
 	glVertexAttribPointer(index, size, type, GL_FALSE, stride, offset);
 	glEnableVertexAttribArray(index);
+	unbindVBO();
+	unbindVAO();
 }
 
 void GeometryBuffer::draw() {
 	bindVAO();
-	//glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	if (this->useIndices) {
+		bindEBO();
+		glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
+		unbindEBO();
+	}
+	else {
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+
+	unbindVAO();
+}
+
+void GeometryBuffer::setTexture(unsigned int floorTexture) {
+	bindVAO();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, floorTexture);
 	unbindVAO();
 }
 

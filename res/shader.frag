@@ -1,44 +1,28 @@
-
-
 #version 330 core
-out vec4 FragColor;
+in vec3 normal;
+in vec3 fragPos;
 
-in VS_OUT {
-    vec3 FragPos;
-    vec3 Normal;
-    vec2 TexCoords;
-} fs_in;
+uniform vec3 u_lightPos;
+uniform vec3 u_viewPos;
+uniform vec3 u_lightCol;
+uniform vec3 u_objectCol;
 
-uniform sampler2D floorTexture;
-uniform vec3 lightPos;
-uniform vec3 viewPos;
-uniform bool blinn;
+out vec4 out_color;
 
 void main()
-{           
-    vec3 color = texture(floorTexture, fs_in.TexCoords).rgb;
-    // ambient
-    vec3 ambient = 0.05 * color;
-    // diffuse
-    vec3 lightDir = normalize(lightPos - fs_in.FragPos);
-    vec3 normal = normalize(fs_in.Normal);
-    float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = diff * color;
-    // specular
-    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = 0.0;
-    if(blinn)
-    {
-        vec3 halfwayDir = normalize(lightDir + viewDir);  
-        spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-    }
-    else
-    {
-        vec3 reflectDir = reflect(-lightDir, normal);
-        spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
-    }
-    vec3 specular = vec3(0.3) * spec; // assuming bright white light color
-    FragColor = vec4(ambient + diffuse + specular, 1.0);
-}
+{
+	float ambientStr = 0.1;
+	float specularStr = 0.5;
 
+	vec3 ambient = ambientStr * u_lightCol;
+
+	vec3 norm = normalize(normal);
+	vec3 lightDir = normalize(u_lightPos - fragPos);
+	vec3 diffuse = max(dot(norm, lightDir), 0.0) * u_lightCol;
+	
+	vec3 viewDir = normalize(u_viewPos - fragPos);
+	vec3 reflectDir = reflect(-lightDir, norm);
+	vec3 specular = specularStr * pow(max(dot(viewDir, reflectDir), 0.0), 32) * u_lightCol;
+
+	out_color = vec4((ambient + diffuse + specular) * u_objectCol, 1.0);
+}

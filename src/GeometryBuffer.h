@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <algorithm>
 #include <iterator>
@@ -16,9 +17,10 @@ class GeometryBuffer {
 	GLuint m_vbo;
 	GLuint m_ebo;
 	GLuint vertexAmount;
+	GLboolean useIndices;
 
-	void setVertices(GLfloat* vertices, GLuint size);
-	void setIndices(GLuint* indices, GLuint size, GLuint vertexAmount);
+	void setVertices(GLfloat *vertices, GLuint size);
+	void setIndices(GLuint *indices, GLuint size, GLuint vertexAmount);
 	void bindVAO();
 	void bindVBO();
 	void bindEBO();
@@ -32,5 +34,6 @@ public:
 	~GeometryBuffer();
 
 	void draw();
+	void setTexture(unsigned int floorTexture);
 	void setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset);
 };
