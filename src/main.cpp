@@ -23,7 +23,7 @@ const char* vertexShader = "../res/shader.vert";
 const char* fragmentShader = "../res/shader.frag";
 
 
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(0.f, 0.f, -3.0f);
 glm::mat4 mat_projection;
 bool projection_type = true;
 
@@ -160,8 +160,12 @@ int main()
     GeometryBuffer buffer(vertices, sizeof(vertices), 12 * 3);
     // With EBO
     //GeometryBuffer buffer(verticesEBO, sizeof(verticesEBO), indicesEBO, sizeof(indicesEBO), sizeof(indicesEBO));
+    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    //glEnableVertexAttribArray(0);
+    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    //glEnableVertexAttribArray(1);
 	buffer.setAttributes(0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-	//buffer.setAttributes(1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	buffer.setAttributes(1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 
     // For calculating fps
     GLdouble lastTime = glfwGetTime();
@@ -174,7 +178,7 @@ int main()
 
         // Rotate model matrix
         mat_model = glm::rotate(mat_model, glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
-        mat_model = glm::rotate(mat_model, glm::radians(0.2f), glm::vec3(1.f, 0.f, 0.f));
+        //mat_model = glm::rotate(mat_model, glm::radians(0.2f), glm::vec3(1.f, 0.f, 0.f));
         shader.setUniform("u_model", mat_model);
 
         // Set projection

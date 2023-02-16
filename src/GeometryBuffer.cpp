@@ -40,8 +40,12 @@ void GeometryBuffer::setIndices(GLuint *indices, GLuint size, GLuint vertexAmoun
 }
 
 void GeometryBuffer::setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset) {
+	bindVAO();
+	bindVBO();
 	glVertexAttribPointer(index, size, type, GL_FALSE, stride, offset);
 	glEnableVertexAttribArray(index);
+	unbindVBO();
+	unbindVAO();
 }
 
 void GeometryBuffer::draw() {
