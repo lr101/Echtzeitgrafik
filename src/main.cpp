@@ -15,6 +15,7 @@
 #include <Shader_learn.h>
 #include <camera_learn.h>
 #include <Model_learn.h>
+#include "GeometryBuffer.h"
 
 #include <iostream>
 
@@ -78,8 +79,11 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // build and compile shaders
+    std::string path = std::filesystem::current_path().generic_string();
+    std::string vertexShaderPath = std::string(path).append("/../res/shader.vert");
+    std::string fragmentShaderPath = std::string(path).append("/../res/shader.frag");
     // -------------------------
-    Shader shader("C:/Users/lukas/Documents/GIT/Git_Semester_5/Echtzeitgrafik/res/shader.vert", "C:/Users/lukas/Documents/GIT/Git_Semester_5/Echtzeitgrafik/res/shader.frag");
+    Shader shader(vertexShaderPath.c_str(), fragmentShaderPath.c_str());
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -108,11 +112,10 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glBindVertexArray(0);
 
-
-    std::cout << "C:/Users/lukas/Documents/GIT/Git_Semester_5/Echtzeitgrafik/res/LHR_0682.jpg" << std::endl;
     // load textures
     // -------------
-    unsigned int floorTexture = loadTexture("C:/Users/lukas/Documents/GIT/Git_Semester_5/Echtzeitgrafik/res/LHR_0682.jpg");
+    std::string texture = std::string(path).append("/../res/LHR_0682.jpg");
+    unsigned int floorTexture = loadTexture(texture.c_str());
 
     // shader configuration
     // --------------------
@@ -157,8 +160,6 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        std::cout << (blinn ? "Blinn-Phong" : "Phong") << std::endl;
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

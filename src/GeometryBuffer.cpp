@@ -9,10 +9,19 @@ GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices
 	bindEBO();
 	setVertices(vertices, v_size);
 	setIndices(indices, i_size, vertexAmount);
-	setAttributes(0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
 	unbindVBO();
 	unbindVAO();
 	unbindEBO();
+}
+
+GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint vertexAmount) {
+	glGenVertexArrays(1, &m_vao);
+	glGenBuffers(1, &m_vbo);
+	bindVAO();
+	bindVBO();
+	setVertices(vertices, v_size);
+	unbindVBO();
+	unbindVAO();
 }
 
 GeometryBuffer::~GeometryBuffer() {
@@ -21,11 +30,11 @@ GeometryBuffer::~GeometryBuffer() {
 	glDeleteBuffers(1, &m_ebo);
 }
 
-void GeometryBuffer::setVertices(GLfloat *vertices, GLuint size) {
+void GeometryBuffer::setVertices(GLfloat* vertices, GLuint size) {
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
 
-void GeometryBuffer::setIndices(GLuint *indices, GLuint size, GLuint vertexAmount) {
+void GeometryBuffer::setIndices(GLuint* indices, GLuint size, GLuint vertexAmount) {
 	this->vertexAmount = vertexAmount;
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
 }
@@ -37,7 +46,8 @@ void GeometryBuffer::setAttributes(GLuint index, GLint size, GLenum type, GLsize
 
 void GeometryBuffer::draw() {
 	bindVAO();
-	glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
+	//glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 	unbindVAO();
 }
 
