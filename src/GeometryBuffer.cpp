@@ -1,6 +1,8 @@
 #include "GeometryBuffer.h"
 
 GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices[], GLuint i_size, GLuint vertexAmount) {
+	this->useIndices = true;
+	this->vertexAmount = vertexAmount;
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
 	glGenBuffers(1, &m_ebo);
@@ -15,6 +17,8 @@ GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices
 }
 
 GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint vertexAmount) {
+	this->useIndices = false;
+	this->vertexAmount = vertexAmount;
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
 	bindVAO();
@@ -31,12 +35,21 @@ GeometryBuffer::~GeometryBuffer() {
 }
 
 void GeometryBuffer::setVertices(GLfloat *vertices, GLuint size) {
+	bindVAO();
+	bindVBO();
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+	unbindVAO();
+	unbindVBO();
 }
 
 void GeometryBuffer::setIndices(GLuint *indices, GLuint size, GLuint vertexAmount) {
-	this->vertexAmount = vertexAmount;
+	bindVAO();
+	bindVBO();
+	bindEBO();
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
+	unbindEBO();
+	unbindVAO();
+	unbindVBO();
 }
 
 void GeometryBuffer::setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset) {
@@ -50,8 +63,11 @@ void GeometryBuffer::setAttributes(GLuint index, GLint size, GLenum type, GLsize
 
 void GeometryBuffer::draw() {
 	bindVAO();
-	//glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	if (this->useIndices) {
+		glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
+	} else {
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
 	unbindVAO();
 }
 

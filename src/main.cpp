@@ -160,10 +160,7 @@ int main()
     GeometryBuffer buffer(vertices, sizeof(vertices), 12 * 3);
     // With EBO
     //GeometryBuffer buffer(verticesEBO, sizeof(verticesEBO), indicesEBO, sizeof(indicesEBO), sizeof(indicesEBO));
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    //glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    //glEnableVertexAttribArray(1);
+
 	buffer.setAttributes(0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
 	buffer.setAttributes(1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 
