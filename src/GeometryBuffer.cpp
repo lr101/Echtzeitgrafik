@@ -54,7 +54,9 @@ void GeometryBuffer::setAttributes(GLuint index, GLint size, GLenum type, GLsize
 void GeometryBuffer::draw() {
 	bindVAO();
 	if (this->useIndices) {
+		bindEBO();
 		glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
+		unbindEBO();
 	} else {
 		glDrawArrays(GL_TRIANGLES, 0, this->vertexAmount);
 	}
