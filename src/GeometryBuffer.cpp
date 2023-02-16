@@ -22,14 +22,12 @@ GeometryBuffer::~GeometryBuffer() {
 }
 
 void GeometryBuffer::setVertices(GLfloat *vertices, GLuint size) {
-	this->vertices.assign(vertices, vertices + size);
-	glBufferData(GL_ARRAY_BUFFER, this->vertices.size(), &(this->vertices)[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
 
 void GeometryBuffer::setIndices(GLuint *indices, GLuint size, GLuint vertexAmount) {
 	this->vertexAmount = vertexAmount;
-	this->indices.assign(indices, indices + size);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size(), &(this->indices)[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
 }
 
 void GeometryBuffer::setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset) {

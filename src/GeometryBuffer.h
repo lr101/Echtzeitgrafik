@@ -16,8 +16,6 @@ class GeometryBuffer {
 	GLuint m_vbo;
 	GLuint m_ebo;
 	GLuint vertexAmount;
-	std::vector<GLfloat> vertices;
-	std::vector<GLuint> indices;
 
 	void setVertices(GLfloat *vertices, GLuint size);
 	void setIndices(GLuint *indices, GLuint size, GLuint vertexAmount);
