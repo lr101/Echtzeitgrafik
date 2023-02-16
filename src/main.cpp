@@ -74,11 +74,11 @@ int main()
     shader.setUniform("u_view", mat_view);
     shader.setUniform("u_projection", mat_projection);
     shader.setUniform("u_lightPos", lightPos);
-    shader.setUniform("u_viewPos", lightPos + glm::vec3(0.0, 1.0, 0.0));
+    shader.setUniform("u_viewPos", lightPos + glm::vec3(0.0f, -1.0f, 0.0f));
+    shader.setUniform("u_objectColor", glm::vec3(1.f, .5f, .32f));
+    shader.setUniform("u_lightColor", glm::vec3(1.f, 1.f, 1.f));
 
-    // Set up vertex data (and buffer(s)) and attribute pointers
-    // We add a new set of vertices to form a second triangle (a total of 6 vertices); the vertex attribute configuration remains the same (still one 3-float position vector per vertex)
-    GLfloat vertices[] = {
+    GLfloat verticesEBO[] = {
         -0.5f, -0.5f, -0.5f,
         -0.5f, -0.5f, 0.5f,
         -0.5f, 0.5f, -0.5f,
@@ -86,10 +86,10 @@ int main()
         0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, 0.5f,
         0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, 0.5f
+        0.5f, 0.5f, 0.5f,
     };
 
-    GLuint indices[] = {
+    GLuint indicesEBO[] = {
         0, 1, 2,
         1, 2, 3,
         0, 2, 6,
@@ -104,13 +104,64 @@ int main()
         2, 6, 7
     };
 
-    GeometryBuffer buffer(vertices, sizeof(vertices), indices, sizeof(indices), sizeof(indices));
+    //TODO calc normal automatically
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    // vertices cube without ebo
+    GLfloat vertices[] = {
+        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+        -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+        0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+
+        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+
+        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+
+        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+
+        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+        0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    };
+
+    GeometryBuffer buffer(vertices, sizeof(vertices), 12 * 3);
+    // With EBO
+    //GeometryBuffer buffer(verticesEBO, sizeof(verticesEBO), indicesEBO, sizeof(indicesEBO), sizeof(indicesEBO));
+	buffer.setAttributes(0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	//buffer.setAttributes(1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 
     // For calculating fps
     GLdouble lastTime = glfwGetTime();
@@ -123,6 +174,7 @@ int main()
 
         // Rotate model matrix
         mat_model = glm::rotate(mat_model, glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+        mat_model = glm::rotate(mat_model, glm::radians(0.2f), glm::vec3(1.f, 0.f, 0.f));
         shader.setUniform("u_model", mat_model);
 
         // Set projection
@@ -130,7 +182,7 @@ int main()
 
         // Render
         // Enable Depth Testing
-        glEnable(GL_DEPTH_TEST);
+        //glEnable(GL_DEPTH_TEST);
         // Clear the colorbuffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

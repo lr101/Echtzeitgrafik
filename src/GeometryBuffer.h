@@ -19,7 +19,6 @@ class GeometryBuffer {
 
 	void setVertices(GLfloat *vertices, GLuint size);
 	void setIndices(GLuint *indices, GLuint size, GLuint vertexAmount);
-	void setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset);
 	void bindVAO();
 	void bindVBO();
 	void bindEBO();
@@ -29,7 +28,9 @@ class GeometryBuffer {
 
 public:
 	GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices[], GLuint i_size, GLuint vertexAmount);
+	GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint vertexAmount);
 	~GeometryBuffer();
 
 	void draw();
+	void setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset);
 };
