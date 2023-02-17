@@ -18,6 +18,14 @@ GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint vertexA
 	setVertices(vertices, v_size);
 }
 
+GeometryBuffer::GeometryBuffer(const GeometryBuffer& buffer) {
+	this->m_ebo = buffer.m_ebo;
+	this->m_vao = buffer.m_vao;
+	this->m_vbo = buffer.m_vbo;
+	this->vertexAmount = buffer.vertexAmount;
+	this->useIndices = buffer.useIndices;
+}
+
 GeometryBuffer::~GeometryBuffer() {
 	glDeleteVertexArrays(1, &m_vao);
 	glDeleteBuffers(1, &m_vbo);

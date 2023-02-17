@@ -16,6 +16,7 @@ class PointLight {
 
 public:
 	PointLight(glm::vec3 lightPos, glm::vec3 lightCol);
+	PointLight(const PointLight& light);
 	~PointLight();
 
 	void setUniforms(Shader& shader);

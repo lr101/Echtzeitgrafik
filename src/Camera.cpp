@@ -7,6 +7,11 @@ Camera::Camera(glm::vec3 cameraPostition_, glm::vec3 lookAt_) {
 	this->lookAt = lookAt_;
 }
 
+Camera::Camera(const Camera& camera) {
+	this->cameraPostition = camera.cameraPostition;
+	this->lookAt = camera.lookAt;
+}
+
 Camera::~Camera() {
 
 }
