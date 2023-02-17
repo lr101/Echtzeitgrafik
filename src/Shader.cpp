@@ -50,15 +50,22 @@ void Shader::setUniform(const char* name, glm::mat4 val)
 }
 
 std::string Shader::load(const char* src) {
-	// open files
-	std::ifstream shaderFile;
-	shaderFile.open(src);
-	std::stringstream shaderStream;
-	// read file's buffer contents into streams
-	shaderStream << shaderFile.rdbuf();
-	shaderFile.close();
-	// convert stream into string
-	return shaderStream.str();
+	try {
+		// open files
+		std::ifstream shaderFile;
+		shaderFile.open(src);
+		std::stringstream shaderStream;
+		// read file's buffer contents into streams
+		shaderStream << shaderFile.rdbuf();
+		shaderFile.close();
+		// convert stream into string
+		return shaderStream.str();
+	}
+	catch (std::ifstream::failure& e)
+	{
+		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+	}
+	return "";
 }
 
 void Shader::compile(GLuint *s, const char *s_src) {
@@ -89,6 +96,12 @@ void Shader::link() {
 }
 
 std::string Shader::getPath(const char* fileName) {
-	return std::string(std::filesystem::current_path().generic_string()).append("/../res/").append(fileName);
+	try {
+		return std::string(std::filesystem::current_path().generic_string()).append("/../res/").append(fileName);
+	}
+	catch (std::exception& e) {
+		std::cout << "ERROR::SHADER::PATH COULD NOT BE BUILD: " << e.what() << std::endl;
+	}
+	return "";
 }
 

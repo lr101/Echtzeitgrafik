@@ -7,6 +7,7 @@
 #include "Mesh.hpp"
 #include "Shader.h"
 #include "PointLight.h"
+#include "Camera.h"
 
 class Scene
 {
@@ -18,9 +19,7 @@ public:
 
 	void setUniforms(Shader& shader);
 
-	const glm::vec3& getCameraPos();
-
-	//TODO destructor
+	~Scene();
 
 private:
 
@@ -28,9 +27,11 @@ private:
 	
 	void processLights(const aiScene* scene);
 
+	void processCamera(const aiScene* scene);
+
 	std::vector<Mesh2*> meshes;
 
-	glm::vec3 cameraPosition;
+	std::unique_ptr<Camera> camera;
 
 	std::unique_ptr<PointLight> light;
 };

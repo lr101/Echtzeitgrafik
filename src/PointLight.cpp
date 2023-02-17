@@ -1,6 +1,8 @@
 #include "PointLight.h"
 
 PointLight::PointLight(glm::vec3 lightPos, glm::vec3 lightCol) {
+	std::cout << "light position: " << lightPos[0] << ", " << lightPos[1] << ", " << lightPos[2] << std::endl;
+	std::cout << "light color: " << lightCol[0] << ", " << lightCol[1] << ", " << lightCol[2] << std::endl;
 	this->lightPos = lightPos;
 	this->lightCol = lightCol;
 }
