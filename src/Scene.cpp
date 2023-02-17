@@ -39,8 +39,10 @@ void Scene::processCamera(const aiScene* scene)
 {
 	for (int i = 0; i < scene->mNumCameras; i++) {
 		aiVector3D point = scene->mCameras[i]->mPosition;
+		aiVector3D look = scene->mCameras[i]->mLookAt;
 		glm::vec3 position = glm::vec3(point.x, point.y, point.z);
-		this->camera = std::make_unique<Camera>(position);
+		glm::vec3 lookAt = glm::vec3(look.x, look.y, look.z);
+		this->camera = std::make_unique<Camera>(position, lookAt, scene->mCameras[i]->mOrthographicWidth);
 	}
 }
 

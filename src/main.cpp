@@ -96,8 +96,7 @@ int main()
         shader.setUniform("u_projection", mat_projection);
 
         // Rotate model matrix
-        glm::mat4 tmp_mat_model = glm::translate(mat_model, glm::vec3(2.f, 0.f, -2.f));
-        tmp_mat_model = glm::rotate(tmp_mat_model, rotAmount, glm::vec3(0.1f, 0.1f, 0.1f));
+        glm::mat4 tmp_mat_model = glm::rotate(mat_model, rotAmount, glm::vec3(0.0f, 1.0f, 0.0f));
         shader.setUniform("u_model", tmp_mat_model);
 
         //render the vertices in GeometryBuffer
