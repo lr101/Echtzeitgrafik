@@ -15,7 +15,7 @@ class MyWindow
 	GLFWwindow* mWindow;
 	bool projection_type;
 	glm::mat4 mat_projection;
-	Shader* shader = nullptr;
+	Shader* shader;
 
 public:
 	MyWindow(int width, int height, const char* name);

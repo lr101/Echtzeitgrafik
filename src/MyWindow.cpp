@@ -4,6 +4,7 @@ MyWindow::MyWindow(int width, int height, const char* name) {
 	this->mat_projection = glm::perspective(glm::radians(45.0f), (float) width / (float) height, 0.1f, 1000.0f);
 	this->mWindow = glfwCreateWindow(width, height, name, NULL, NULL);
 	this->projection_type = true;
+	this->shader = nullptr;
 
 	glfwSetWindowUserPointer(this->mWindow, this);
 	glfwSetKeyCallback(this->mWindow, onKey);
