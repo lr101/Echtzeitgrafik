@@ -64,13 +64,9 @@ int main()
     Shader shader("shader.vert", "shader.frag");
 
     // Create model, view and projection matrices for the shader
-    glm::mat4 mat_model = glm::mat4(1.0f);
+
     mat_projection = glm::mat4(1.0f);
-
-    mat_model = glm::scale(mat_model, glm::vec3(1.5f, 1.5f, 1.5f));
     mat_projection = glm::perspective(glm::radians(45.0f), WIDTH / HEIGHT, 0.1f, 1000.0f);
-
-    shader.setUniform("u_model", mat_model);
     shader.setUniform("u_projection", mat_projection);
 
 
@@ -80,8 +76,7 @@ int main()
     GLdouble lastTime = glfwGetTime();
     GLuint nbFrames = 0;
 
-    GLfloat rotAmount = glm::radians(0.f);
-    const GLfloat rotPerFrame = .01f;
+    
 
     scene->setUniforms(shader);
     
@@ -97,18 +92,14 @@ int main()
         // Set projection
         shader.setUniform("u_projection", mat_projection);
 
-        // Rotate model matrix
-        glm::mat4 tmp_mat_model = glm::rotate(mat_model, rotAmount, glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.setUniform("u_model", tmp_mat_model);
+       
 
         //render the vertices in GeometryBuffer
         scene->render(shader);
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
-
-        // Rotate the cubes
-        rotAmount = glm::radians(rotPerFrame + glm::degrees(rotAmount));
+        
 
         // Calc fps
         GLdouble currentTime = glfwGetTime();

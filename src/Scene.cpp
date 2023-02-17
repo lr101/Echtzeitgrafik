@@ -13,12 +13,6 @@ Scene::~Scene() {
 	{
 		delete n;
 	}
-	//delete camera
-	auto c = this->camera.release();
-	delete c;
-	//delete light
-	auto l = this->light.release();
-	delete l;
 }
 
 void Scene::render(Shader& shader)
@@ -39,10 +33,8 @@ void Scene::processCamera(const aiScene* scene)
 {
 	for (int i = 0; i < scene->mNumCameras; i++) {
 		aiVector3D point = scene->mCameras[i]->mPosition;
-		aiVector3D look = scene->mCameras[i]->mLookAt;
 		glm::vec3 position = glm::vec3(point.x, point.y, point.z);
-		glm::vec3 lookAt = glm::vec3(look.x, look.y, look.z);
-		this->camera = std::make_unique<Camera>(position, lookAt);
+		this->camera = std::make_unique<Camera>(position);
 	}
 }
 
@@ -73,7 +65,13 @@ void Scene::processMeshes(const aiScene* scene) {
 		}
 		std::cout << "Num vertices (& normals): " << vertices.size() << std::endl;
 		std::cout << "Num incides: " << indices.size() << std::endl;
-		Mesh2* customMesh = new Mesh2(vertices, indices);
+
+		// ------ here hard coded what mash 1 & 2 get as values, 
+		//		  can be done differently if model contains such values
+		const float speed = (i == 0) ? 0.1f : -0.3f;
+
+		// create and save mash
+		Mesh2* customMesh = new Mesh2(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f));
 		this->meshes.push_back(customMesh);
 	}
 	std::cout << "Num meshes: " << this->meshes.size() << std::endl;
@@ -81,9 +79,6 @@ void Scene::processMeshes(const aiScene* scene) {
 
 void Scene::processLights(const aiScene* scene)
 {
-	// TODO: Implement
-	// 
-	// Tip: Unique pointer are initialized as follows:
 	for (int i = 0; i < scene->mNumLights; i++) {
 		aiColor3D color = scene->mLights[i]->mColorDiffuse;
 		aiVector3D point = scene->mLights[i]->mPosition;
