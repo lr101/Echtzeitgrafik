@@ -2,17 +2,16 @@
 #define GLEW_STATIC
 #include <GL/glew.h> // has to be included first!
 #include <GLFW/glfw3.h>
-#include <assimp/Importer.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <iostream>
 #include "GeometryBuffer.h"
 #include "Shader.h"
-#include "PointLight.h"
+#include "Scene.hpp";
+#include <iostream>
 
 // Function prototypes
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -21,12 +20,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 // Window dimensions
 const GLfloat WIDTH = 800.f, HEIGHT = 600.f;
 
-const char* vertexShader = "../res/shader.vert";
-const char* fragmentShader = "../res/shader.frag";
+const char* vertexShader = "shader.vert";
+const char* fragmentShader = "shader.frag";
 
-
-glm::vec3 viewPos(3.f, 0.f, 10.f);
-glm::vec3 lightOffset(0.f, 1.f, 0.f);
 glm::mat4 mat_projection;
 bool projection_type = true;
 
@@ -40,6 +36,8 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+    glfwWindowHint(GLFW_SAMPLES, 8);
+    glEnable(GL_MULTISAMPLE);
 
     // Create a GLFWwindow object that we can use for GLFW's functions
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Cubes", nullptr, nullptr);
@@ -53,103 +51,32 @@ int main()
     glewExperimental = GL_TRUE;
     // Initialize GLEW to setup the OpenGL Function pointers
     glewInit();
-
-    // Define the viewport dimensions
+    glEnable(GL_DEPTH_TEST);
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-	glViewport(0, 0, width, height);
+    glViewport(0, 0, width, height);
 
-	// Enable Depth Testing
-	glEnable(GL_DEPTH_TEST);
-
-    Shader shader(vertexShader, fragmentShader);
+    // build and compile shaders
+    Shader shader("shader.vert", "shader.frag");
 
     // Create model, view and projection matrices for the shader
     glm::mat4 mat_model = glm::mat4(1.0f);
     glm::mat4 mat_view = glm::mat4(1.0f);
     mat_projection = glm::mat4(1.0f);
-
-    mat_model = glm::scale(mat_model, glm::vec3(1.5f, 1.5f, 1.5f));
-    mat_view = glm::translate(mat_view, -1.f * viewPos);
     mat_projection = glm::perspective(glm::radians(45.0f), WIDTH / HEIGHT, 0.1f, 1000.0f);
-
-    shader.setUniform("u_model", mat_model);
-    shader.setUniform("u_view", mat_view);
     shader.setUniform("u_projection", mat_projection);
-    shader.setUniform("u_viewPos", viewPos);
-    shader.setUniform("u_objectCol", glm::vec3(1.f, .5f, .32f));
 
-    PointLight pointLight(viewPos + lightOffset, glm::vec3(1.f, 1.f, 1.f));
-    pointLight.setUniforms(shader);
 
-    GLfloat verticesEBO[] = {
-        // coordinate        normal
-        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-
-        -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-
-        -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-
-        -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-
-        0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-    };
-
-    GLuint indicesEBO[] = {
-        0, 3, 9,
-        0, 6, 9,
-
-        2, 8, 14,
-        8, 14, 20,
-
-        12, 15, 18,
-        15, 18, 21,
-
-        5, 17, 23,
-        5, 11, 23,
-
-        7, 10, 22,
-        7, 19, 22,
-
-        1, 4, 16,
-        1, 13, 16
-    };
-
-    //TODO calc normal automatically
-
-    GeometryBuffer buffer(verticesEBO, sizeof(verticesEBO), indicesEBO, sizeof(indicesEBO), sizeof(indicesEBO) / sizeof(GLuint));
-
-	buffer.setAttributes(0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-	buffer.setAttributes(1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    Scene scene = Scene("test_scenedae.sec");
 
     // For calculating fps
     GLdouble lastTime = glfwGetTime();
     GLuint nbFrames = 0;
 
-    GLfloat rotAmount = glm::radians(0.f);
-    const GLfloat rotPerFrame = .1f;
+
+
+    scene.setUniforms(shader);
+
     while (!glfwWindowShouldClose(window))
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
@@ -162,22 +89,14 @@ int main()
         // Set projection
         shader.setUniform("u_projection", mat_projection);
 
-        // Rotate model matrix
 
-        for (int i = 0; i < 5; i++) {
-            glm::mat4 tmp_mat_model = glm::translate(mat_model, glm::vec3(i * 2.f, 0.f, i * -2.f));
-            tmp_mat_model = glm::rotate(tmp_mat_model, rotAmount, glm::vec3(1.0f, i * 0.5f, 0.1f));
-            shader.setUniform("u_model", tmp_mat_model);
 
-            // Draw our first triangle
-			buffer.draw();
-		}
+        //render the vertices in GeometryBuffer
+        scene.render(shader);
 
-		// Swap the screen buffers
-		glfwSwapBuffers(window);
+        // Swap the screen buffers
+        glfwSwapBuffers(window);
 
-		// Rotate the cubes
-        rotAmount = glm::radians(.1f + glm::degrees(rotAmount));
 
         // Calc fps
         GLdouble currentTime = glfwGetTime();
@@ -188,7 +107,9 @@ int main()
             lastTime += 1.0;
         }
     }
-    // Terminate GLFW, clearing any resources allocated by GLFW.
+
+
+
     glfwTerminate();
     return 0;
 }
@@ -202,15 +123,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
         GLfloat aspect = WIDTH / HEIGHT;
         if (projection_type) {
-            mat_projection = glm::ortho(-1.f * aspect, aspect, -1.f, 1.f, 0.1f, 1000.f);
-		} else {
-			mat_projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
-		}
-		projection_type = !projection_type;
-	}
+            mat_projection = glm::ortho(-1.f * aspect, aspect, -1.f, 1.f, 0.1f, 100.f);
+        }
+        else {
+            mat_projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
+        }
+        projection_type = !projection_type;
+    }
 }
 
-// Is called whenever the window is resized
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);

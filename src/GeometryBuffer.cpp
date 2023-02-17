@@ -24,7 +24,7 @@ GeometryBuffer::~GeometryBuffer() {
 	glDeleteBuffers(1, &m_ebo);
 }
 
-void GeometryBuffer::setVertices(GLfloat *vertices, GLuint size) {
+void GeometryBuffer::setVertices(GLfloat* vertices, GLuint size) {
 	bindVAO();
 	bindVBO();
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -32,7 +32,7 @@ void GeometryBuffer::setVertices(GLfloat *vertices, GLuint size) {
 	unbindVBO();
 }
 
-void GeometryBuffer::setIndices(GLuint *indices, GLuint size, GLuint vertexAmount) {
+void GeometryBuffer::setIndices(GLuint* indices, GLuint size, GLuint vertexAmount) {
 	bindVAO();
 	bindVBO();
 	bindEBO();
@@ -57,7 +57,8 @@ void GeometryBuffer::draw() {
 		bindEBO();
 		glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
 		unbindEBO();
-	} else {
+	}
+	else {
 		glDrawArrays(GL_TRIANGLES, 0, this->vertexAmount);
 	}
 	unbindVAO();

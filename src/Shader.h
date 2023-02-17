@@ -9,8 +9,10 @@
 #include FT_FREETYPE_H
 #include <iostream>
 #include <fstream>
-
+#include <filesystem>
 #include "helper/RootDir.h"
+#include <sstream>
+#include <iostream>
 
 class Shader {
 	GLuint s_vertex;
@@ -32,4 +34,6 @@ public:
 	void setUniform(const char* name, glm::vec4 val);
 	void setUniform(const char* name, glm::mat4 val);
 
+private:
+	std::string getPath(const char* fileName);
 };
