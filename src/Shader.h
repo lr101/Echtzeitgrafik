@@ -20,12 +20,12 @@ class Shader {
 	GLuint s_prog;
 
 	std::string load(const char* src);
-	void compile(GLuint *s, const char *s_src);
+	void compile(GLuint* s, const char* s_src);
 	void link();
 	GLint getUniform(const char* name);
 
 public:
-	Shader(const char *p_vertex, const char *p_fragment);
+	Shader(const char* p_vertex, const char* p_fragment);
 	~Shader();
 
 	void setUniform(const char* name, GLint val);

@@ -29,7 +29,7 @@ public:
 private:
 
 	void processMeshes(const aiScene* scene);
-	
+
 	void processLights(const aiScene* scene);
 
 	void processCamera(const aiScene* scene);

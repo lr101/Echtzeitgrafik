@@ -19,8 +19,8 @@ class GeometryBuffer {
 	GLuint vertexAmount;
 	GLboolean useIndices;
 
-	void setVertices(GLfloat *vertices, GLuint size);
-	void setIndices(GLuint *indices, GLuint size, GLuint vertexAmount);
+	void setVertices(GLfloat* vertices, GLuint size);
+	void setIndices(GLuint* indices, GLuint size, GLuint vertexAmount);
 	void bindVAO();
 	void bindVBO();
 	void bindEBO();

@@ -1,7 +1,7 @@
 #include "MyWindow.h"
 
 MyWindow::MyWindow(int width, int height, const char* name) {
-	this->mat_projection = glm::perspective(glm::radians(45.0f), (float) width / (float) height, 0.1f, 1000.0f);
+	this->mat_projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
 	this->mWindow = glfwCreateWindow(width, height, name, NULL, NULL);
 	this->projection_type = true;
 	this->shader = nullptr;
@@ -25,7 +25,7 @@ void MyWindow::onKey(int key, int scancode, int actions, int mods) {
 	if (key == GLFW_KEY_SPACE && actions == GLFW_PRESS) {
 		int width, height;
 		glfwGetFramebufferSize(this->mWindow, &width, &height);
-		float aspect = (float) width / (float) height;
+		float aspect = (float)width / (float)height;
 		if (this->projection_type) {
 			this->mat_projection = glm::ortho(-1.f * aspect, aspect, -1.f, 1.f, 0.1f, 100.f);
 		}

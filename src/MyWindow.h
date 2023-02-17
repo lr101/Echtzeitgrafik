@@ -28,7 +28,7 @@ public:
 
 private:
 	static void onKey(GLFWwindow* window, int key, int scancode, int actions, int mods) {
-		MyWindow* obj = (MyWindow*) glfwGetWindowUserPointer(window);
+		MyWindow* obj = (MyWindow*)glfwGetWindowUserPointer(window);
 		obj->onKey(key, scancode, actions, mods);
 	};
 

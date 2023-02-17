@@ -19,7 +19,7 @@ void Camera::setUniforms(Shader& shader) {
 	glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
 	glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 	glm::mat4 view;
-	view = glm::lookAt(this->cameraPostition,this->lookAt,cameraUp);
+	view = glm::lookAt(this->cameraPostition, this->lookAt, cameraUp);
 	shader.setUniform("u_view", view);
 	shader.setUniform("u_viewPos", cameraPostition);
 }

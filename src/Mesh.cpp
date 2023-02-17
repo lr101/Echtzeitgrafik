@@ -4,7 +4,7 @@
 
 Mesh2::Mesh2(std::vector<float>& vertices_, std::vector<unsigned int>& indices_, const GLfloat rotPerFrame_, glm::vec3 rotationMatrix_)
 {
-    this->indices = indices_;
+	this->indices = indices_;
 	this->vertices = vertices_;
 	this->rotPerFrame = rotPerFrame_;
 	this->rotationMatrix = rotationMatrix_;

@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-Shader::Shader(const char *vertexFileName, const char *fragmentFileName) {
+Shader::Shader(const char* vertexFileName, const char* fragmentFileName) {
 	glewInit();
 	this->s_vertex = glCreateShader(GL_VERTEX_SHADER);
 	this->s_fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -68,7 +68,7 @@ std::string Shader::load(const char* src) {
 	return "";
 }
 
-void Shader::compile(GLuint *s, const char *s_src) {
+void Shader::compile(GLuint* s, const char* s_src) {
 	glShaderSource(*s, 1, &s_src, NULL);
 	glCompileShader(*s);
 	GLint success;

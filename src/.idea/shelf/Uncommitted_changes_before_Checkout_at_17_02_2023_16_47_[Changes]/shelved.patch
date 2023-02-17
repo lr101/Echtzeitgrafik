@@ -1,0 +1,23 @@
+Index: ../res/test_scenedae.sec
+===================================================================
+diff --git a/../res/test_scenedae.sec b/../res/test_scenedae.sec
+--- a/../res/test_scenedae.sec	
++++ b/../res/test_scenedae.sec	
+@@ -47,7 +47,7 @@
+           <area_shape>0</area_shape>
+           <area_size>0.1</area_size>
+           <area_sizey>0.1</area_sizey>
+-          <area_sizez>0.1</area_sizez>c
++          <area_sizez>0.1</area_sizez>
+           <atm_distance_factor>1</atm_distance_factor>
+           <atm_extinction_factor>1</atm_extinction_factor>
+           <atm_turbidity>2</atm_turbidity>
+@@ -278,7 +278,7 @@
+         </instance_geometry>
+       </node>
+       <node id="Camera_010" name="Camera_010" type="NODE">
+-        <matrix sid="transform">-2.8213e-7 2.8213e-7 1 5.303387 1 2.98024e-8 2.8213e-7 -20 -2.98023e-8 1 -2.8213e-7 0.3425714 0 0 0 1</matrix>
++        <matrix sid="transform">-2.8213e-7 2.8213e-7 1 5.303387 1 2.98024e-8 2.8213e-7 0 -2.98023e-8 1 -2.8213e-7 0.3425714 0 0 0 1</matrix>
+         <instance_camera url="#Camera_010-camera"/>
+       </node>
+       <node id="Point" name="Point" type="NODE">

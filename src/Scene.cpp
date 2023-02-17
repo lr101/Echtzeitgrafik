@@ -62,17 +62,17 @@ void Scene::processMeshes(const aiScene* scene) {
 			// TODO: Copy the vertex data into the vector "vertices"
 			for (int z = 0; z < 6; z++) {
 				switch (z) {
-					case 0:vertices.push_back(aiMesh->mVertices[j].x); break;
-					case 1:vertices.push_back(aiMesh->mVertices[j].y); break;
-					case 2:vertices.push_back(aiMesh->mVertices[j].z); break;
-					case 3:vertices.push_back(aiMesh->mNormals[j].x); break;
-					case 4:vertices.push_back(aiMesh->mNormals[j].y); break;
-					case 5:vertices.push_back(aiMesh->mNormals[j].z); break;
+				case 0:vertices.push_back(aiMesh->mVertices[j].x); break;
+				case 1:vertices.push_back(aiMesh->mVertices[j].y); break;
+				case 2:vertices.push_back(aiMesh->mVertices[j].z); break;
+				case 3:vertices.push_back(aiMesh->mNormals[j].x); break;
+				case 4:vertices.push_back(aiMesh->mNormals[j].y); break;
+				case 5:vertices.push_back(aiMesh->mNormals[j].z); break;
 				}
 			}
-			
+
 		}
-		
+
 		std::vector<uint32_t> indices;
 		for (unsigned int k = 0; k < aiMesh->mNumFaces; k++) {
 			aiFace& face = aiMesh->mFaces[k];
@@ -102,7 +102,7 @@ void Scene::processLights(const aiScene* scene)
 		glm::vec3 lightPos = glm::vec3(point.x, point.y, point.z);
 		this->light = std::make_unique<PointLight>(lightPos, lightCol);
 	}
-	
+
 }
 
 const aiScene* Scene::loadScene(std::string fileName) {
