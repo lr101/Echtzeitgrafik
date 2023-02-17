@@ -59,16 +59,8 @@ void GeometryBuffer::draw() {
 		unbindEBO();
 	}
 	else {
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, this->vertexAmount);
 	}
-
-	unbindVAO();
-}
-
-void GeometryBuffer::setTexture(unsigned int floorTexture) {
-	bindVAO();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, floorTexture);
 	unbindVAO();
 }
 

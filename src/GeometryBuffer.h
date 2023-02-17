@@ -34,6 +34,5 @@ public:
 	~GeometryBuffer();
 
 	void draw();
-	void setTexture(unsigned int floorTexture);
 	void setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset);
 };
