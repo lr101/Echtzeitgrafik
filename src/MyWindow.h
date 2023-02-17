@@ -19,6 +19,7 @@ class MyWindow
 
 public:
 	MyWindow(int width, int height, const char* name);
+	MyWindow(const MyWindow& window);
 	~MyWindow();
 
 	void onKey(int key, int scancode, int actions, int mods);

@@ -20,6 +20,8 @@ public:
 
 	Scene(std::string fileName);
 
+	Scene(const Scene& scene);
+
 	void render(Shader& shader);
 
 	void setUniforms(Shader& shader);
@@ -36,7 +38,7 @@ private:
 
 	const aiScene* loadScene(std::string fileName);
 
-	std::vector<Mesh2*> meshes;
+	std::vector<std::unique_ptr<Mesh2>> meshes;
 
 	std::unique_ptr<Camera> camera;
 

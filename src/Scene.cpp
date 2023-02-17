@@ -21,13 +21,17 @@ Scene::Scene(std::string fileName)
 	this->processCamera(scene);
 }
 
-Scene::~Scene() {
-	//delte meshes
-	for (auto* n : this->meshes)
-	{
-		delete n;
+Scene::Scene(const Scene& scene) {
+	this->camera = std::make_unique<Camera>(*(scene.camera));
+	this->light = std::make_unique<PointLight>(*(scene.light));
+	for (auto& m : scene.meshes) {
+		this->meshes.push_back(std::make_unique<Mesh2>(*(m)));
 	}
+	
+
 }
+
+Scene::~Scene() {}
 
 void Scene::render(Shader& shader)
 {
@@ -87,8 +91,7 @@ void Scene::processMeshes(const aiScene* scene) {
 		const float speed = (i == 0) ? 0.1f : -0.3f;
 
 		// create and save mash
-		Mesh2* customMesh = new Mesh2(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f));
-		this->meshes.push_back(customMesh);
+		this->meshes.push_back(std::make_unique<Mesh2>(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f)));
 	}
 	std::cout << "Num meshes: " << this->meshes.size() << std::endl;
 }

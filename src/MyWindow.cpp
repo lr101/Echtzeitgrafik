@@ -13,6 +13,13 @@ MyWindow::MyWindow(int width, int height, const char* name) {
 	glViewport(0, 0, width, height);
 }
 
+MyWindow::MyWindow(const MyWindow& window) {
+	this->mat_projection = window.mat_projection;
+	this->mWindow = window.mWindow;
+	this->projection_type = window.projection_type;
+	this->shader = window.shader;
+}
+
 MyWindow::~MyWindow() {
 	glfwDestroyWindow(this->mWindow);
 }

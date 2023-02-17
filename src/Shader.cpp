@@ -14,6 +14,12 @@ Shader::Shader(const char* vertexFileName, const char* fragmentFileName) {
 	glDeleteShader(this->s_fragment);
 }
 
+Shader::Shader(const Shader& shader) {
+	this->s_fragment = shader.s_fragment;
+	this->s_prog = shader.s_prog;
+	this->s_vertex = shader.s_vertex;
+}
+
 Shader::~Shader() {
 
 }

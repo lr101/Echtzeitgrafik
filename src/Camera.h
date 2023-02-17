@@ -7,6 +7,7 @@ class Camera {
 
 public:
 	Camera(glm::vec3 cameraPostition_, glm::vec3 lookAt_);
+	Camera(const Camera& camera);
 	~Camera();
 
 	void setUniforms(Shader& shader);

@@ -7,6 +7,11 @@ PointLight::PointLight(glm::vec3 lightPos, glm::vec3 lightCol) {
 	this->lightCol = lightCol;
 }
 
+PointLight::PointLight(const PointLight& light) {
+	this->lightPos = light.lightPos;
+	this->lightCol = light.lightCol;
+}
+
 PointLight::~PointLight() {
 
 }
