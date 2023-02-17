@@ -13,7 +13,7 @@ Mesh::Mesh(std::vector<float>& vertices_, std::vector<unsigned int>& indices_, c
 	buffer->setAttributes(1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 }
 
-Mesh2::Mesh2(const Mesh2& mesh) {
+Mesh::Mesh(const Mesh& mesh) {
 	this->indices = mesh.indices;
 	this->vertices = mesh.vertices;
 	this->rotPerFrame = mesh.rotPerFrame;
@@ -21,9 +21,9 @@ Mesh2::Mesh2(const Mesh2& mesh) {
 	this->buffer = std::make_unique<GeometryBuffer>(*(mesh.buffer));
 }
 
-Mesh2::~Mesh2() {}
+Mesh::~Mesh() {}
 
-void Mesh2::render(Shader& shader)
+void Mesh::render(Shader& shader)
 {
 	// Rotate model matrix
 	glm::mat4 tmp_mat_model = glm::rotate(this->mat_model, this->rotAmount, this->rotationMatrix);

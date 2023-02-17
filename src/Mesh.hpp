@@ -9,8 +9,8 @@ class Mesh
 {
 public:
 
-	Mesh2(std::vector<float>& vertices_, std::vector<unsigned int>& indices_, const GLfloat rotPerFrame_, glm::vec3 rotationMatrix_);
-	Mesh2(const Mesh2& mesh);
+	Mesh(std::vector<float>& vertices_, std::vector<unsigned int>& indices_, const GLfloat rotPerFrame_, glm::vec3 rotationMatrix_);
+	Mesh(const Mesh& mesh);
 	void render(Shader& shader);
 
 	~Mesh();

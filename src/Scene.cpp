@@ -25,7 +25,7 @@ Scene::Scene(const Scene& scene) {
 	this->camera = std::make_unique<Camera>(*(scene.camera));
 	this->light = std::make_unique<PointLight>(*(scene.light));
 	for (auto& m : scene.meshes) {
-		this->meshes.push_back(std::make_unique<Mesh2>(*(m)));
+		this->meshes.push_back(std::make_unique<Mesh>(*(m)));
 	}
 	
 
@@ -93,7 +93,7 @@ void Scene::processMeshes(const aiScene* scene) {
 		const float speed = (i == 0) ? 0.01f : -0.03f;
 
 		// create and save mash
-		this->meshes.push_back(std::make_unique<Mesh2>(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f)));
+		this->meshes.push_back(std::make_unique<Mesh>(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f)));
 	}
 	std::cout << "Num meshes: " << this->meshes.size() << std::endl;
 }

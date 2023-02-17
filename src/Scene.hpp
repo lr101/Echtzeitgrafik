@@ -38,7 +38,7 @@ private:
 
 	const aiScene* loadScene(std::string fileName);
 
-	std::vector<std::unique_ptr<Mesh2>> meshes;
+	std::vector<std::unique_ptr<Mesh>> meshes;
 
 	std::unique_ptr<Camera> camera;
 
