@@ -16,7 +16,8 @@
 
 #include "GeometryBuffer.h"
 #include "Shader.h"
-#include "Scene.hpp";
+#include "Scene.hpp"
+#include "MyWindow.h"
 #include <iostream>
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -24,15 +25,10 @@ Scene* loadScene();
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 // Window dimensions
-const GLfloat WIDTH = 1920.f, HEIGHT = 1080.f;
+int WIDTH = 800.f, HEIGHT = 600.f;
 
 const char* vertexShader = "shader.vert";
 const char* fragmentShader = "shader.frag";
-
-glm::mat4 mat_projection;
-bool projection_type = true;
-
-
 
 int main()
 {
@@ -43,35 +39,24 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    
-    // glfw window creation
-    // --------------------
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", NULL, NULL);
-    // Set the required callback functions
-    glfwSetKeyCallback(window, key_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwMakeContextCurrent(window);
-    glewExperimental = GL_TRUE;
-    glewInit();
-    glEnable(GL_DEPTH_TEST);
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
+    // initialize window
+    MyWindow mWindow(WIDTH, HEIGHT, "Window");
 
     // build and compile shaders
     Shader shader("shader.vert", "shader.frag");
 
     // Create model, view and projection matrices for the shader
     glm::mat4 mat_model = glm::mat4(1.0f);
-    mat_projection = glm::mat4(1.0f);
 
     mat_model = glm::scale(mat_model, glm::vec3(1.5f, 1.5f, 1.5f));
-    mat_projection = glm::perspective(glm::radians(45.0f), WIDTH / HEIGHT, 0.1f, 1000.0f);
 
     shader.setUniform("u_model", mat_model);
-    shader.setUniform("u_projection", mat_projection);
 
-
+    mWindow.setShader(&shader);
+    
+    glewExperimental = GL_TRUE;
+    glewInit();
+    glEnable(GL_DEPTH_TEST);
     Scene* scene = loadScene();
 
     // For calculating fps
@@ -79,11 +64,11 @@ int main()
     GLuint nbFrames = 0;
 
     GLfloat rotAmount = glm::radians(0.f);
-    const GLfloat rotPerFrame = .01f;
+    const GLfloat rotPerFrame = .1f;
 
     scene->setUniforms(shader);
     
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(mWindow.getWindow()))
     {
         // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
         glfwPollEvents();
@@ -91,9 +76,6 @@ int main()
         // Clear the colorbuffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Set projection
-        shader.setUniform("u_projection", mat_projection);
 
         // Rotate model matrix
         glm::mat4 tmp_mat_model = glm::rotate(mat_model, rotAmount, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -103,7 +85,7 @@ int main()
         scene->render(shader);
 
         // Swap the screen buffers
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(mWindow.getWindow());
 
         // Rotate the cubes
         rotAmount = glm::radians(rotPerFrame + glm::degrees(rotAmount));
@@ -120,29 +102,9 @@ int main()
     }
 
     delete scene;
-
+    // TODO Window muss vor glfwTerminate geschlossen werden?
     glfwTerminate();
     return 0;
-}
-
-
-
-// Is called whenever a key is pressed/released via GLFW
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    }
-
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
-        GLfloat aspect = WIDTH / HEIGHT;
-        if (projection_type) {
-            mat_projection = glm::ortho(-1.f * aspect, aspect, -1.f, 1.f, 0.1f, 100.f);
-        }
-        else {
-            mat_projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
-        }
-        projection_type = !projection_type;
-    }
 }
 
 Scene* loadScene() {
@@ -160,7 +122,3 @@ Scene* loadScene() {
     return new Scene(scene);
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
