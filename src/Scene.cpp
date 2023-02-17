@@ -27,6 +27,7 @@ Scene::~Scene() {
 	{
 		delete n;
 	}
+	this->meshes.clear();
 }
 
 void Scene::render(Shader& shader)
@@ -87,7 +88,7 @@ void Scene::processMeshes(const aiScene* scene) {
 		const float speed = (i == 0) ? 0.1f : -0.3f;
 
 		// create and save mash
-		Mesh2* customMesh = new Mesh2(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f));
+		Mesh* customMesh = new Mesh(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f));
 		this->meshes.push_back(customMesh);
 	}
 	std::cout << "Num meshes: " << this->meshes.size() << std::endl;

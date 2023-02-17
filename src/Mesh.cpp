@@ -2,7 +2,7 @@
 
 #include "Mesh.hpp"
 
-Mesh2::Mesh2(std::vector<float>& vertices_, std::vector<unsigned int>& indices_, const GLfloat rotPerFrame_, glm::vec3 rotationMatrix_)
+Mesh::Mesh(std::vector<float>& vertices_, std::vector<unsigned int>& indices_, const GLfloat rotPerFrame_, glm::vec3 rotationMatrix_)
 {
 	this->indices = indices_;
 	this->vertices = vertices_;
@@ -13,11 +13,11 @@ Mesh2::Mesh2(std::vector<float>& vertices_, std::vector<unsigned int>& indices_,
 	buffer->setAttributes(1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 }
 
-Mesh2::~Mesh2() {
+Mesh::~Mesh() {
 	delete buffer;
 }
 
-void Mesh2::render(Shader& shader)
+void Mesh::render(Shader& shader)
 {
 	// Rotate model matrix
 	glm::mat4 tmp_mat_model = glm::rotate(this->mat_model, this->rotAmount, this->rotationMatrix);

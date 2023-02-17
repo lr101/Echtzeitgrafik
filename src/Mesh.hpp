@@ -5,15 +5,15 @@
 #include "Shader.h"
 #include "GeometryBuffer.h"
 
-class Mesh2
+class Mesh
 {
 public:
 
-	Mesh2(std::vector<float>& vertices_, std::vector<unsigned int>& indices_, const GLfloat rotPerFrame_, glm::vec3 rotationMatrix_);
+	Mesh(std::vector<float>& vertices_, std::vector<unsigned int>& indices_, const GLfloat rotPerFrame_, glm::vec3 rotationMatrix_);
 
 	void render(Shader& shader);
 
-	~Mesh2();
+	~Mesh();
 
 private:
 	std::vector<float> vertices;
