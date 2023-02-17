@@ -8,14 +8,20 @@ Mesh2::Mesh2(std::vector<float>& vertices_, std::vector<unsigned int>& indices_,
 	this->vertices = vertices_;
 	this->rotPerFrame = rotPerFrame_;
 	this->rotationMatrix = rotationMatrix_;
-	this->buffer = new GeometryBuffer(&vertices[0], vertices.size() * sizeof(float), &indices[0], indices.size() * sizeof(float), indices.size());
+	this->buffer = std::make_unique<GeometryBuffer>(&vertices[0], vertices.size() * sizeof(float), &indices[0], indices.size() * sizeof(float), indices.size());
 	buffer->setAttributes(0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
 	buffer->setAttributes(1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 }
 
-Mesh2::~Mesh2() {
-	delete buffer;
+Mesh2::Mesh2(const Mesh2& mesh) {
+	this->indices = mesh.indices;
+	this->vertices = mesh.vertices;
+	this->rotPerFrame = mesh.rotPerFrame;
+	this->rotationMatrix = mesh.rotationMatrix;
+	this->buffer = std::make_unique<GeometryBuffer>(*(mesh.buffer));
 }
+
+Mesh2::~Mesh2() {}
 
 void Mesh2::render(Shader& shader)
 {

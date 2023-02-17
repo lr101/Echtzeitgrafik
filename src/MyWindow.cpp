@@ -11,9 +11,18 @@ MyWindow::MyWindow(int width, int height, const char* name) {
 	glfwSetFramebufferSizeCallback(mWindow, onResize);
 	glfwMakeContextCurrent(this->mWindow);
 	glViewport(0, 0, width, height);
+	glEnable(GL_CULL_FACE);
+}
+
+MyWindow::MyWindow(const MyWindow& window) {
+	this->mat_projection = window.mat_projection;
+	this->mWindow = window.mWindow;
+	this->projection_type = window.projection_type;
+	this->shader = window.shader;
 }
 
 MyWindow::~MyWindow() {
+	glfwTerminate();
 	glfwDestroyWindow(this->mWindow);
 }
 

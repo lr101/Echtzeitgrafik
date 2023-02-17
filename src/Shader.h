@@ -26,6 +26,7 @@ class Shader {
 
 public:
 	Shader(const char* p_vertex, const char* p_fragment);
+	Shader(const Shader& shader);
 	~Shader();
 
 	void setUniform(const char* name, GLint val);
