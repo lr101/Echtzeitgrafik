@@ -11,6 +11,7 @@ MyWindow::MyWindow(int width, int height, const char* name) {
 	glfwSetFramebufferSizeCallback(mWindow, onResize);
 	glfwMakeContextCurrent(this->mWindow);
 	glViewport(0, 0, width, height);
+	glEnable(GL_CULL_FACE);
 }
 
 MyWindow::MyWindow(const MyWindow& window) {
@@ -21,6 +22,7 @@ MyWindow::MyWindow(const MyWindow& window) {
 }
 
 MyWindow::~MyWindow() {
+	glfwTerminate();
 	glfwDestroyWindow(this->mWindow);
 }
 

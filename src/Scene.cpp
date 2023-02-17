@@ -88,7 +88,7 @@ void Scene::processMeshes(const aiScene* scene) {
 
 		// ------ here hard coded what mash 1 & 2 get as values, 
 		//		  can be done differently if scene file contains such values
-		const float speed = (i == 0) ? 0.1f : -0.3f;
+		const float speed = (i == 0) ? 0.01f : -0.03f;
 
 		// create and save mash
 		this->meshes.push_back(std::make_unique<Mesh2>(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f)));
