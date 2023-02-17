@@ -46,13 +46,6 @@ int main() {
 	// build and compile shaders
 	Shader shader("shader.vert", "shader.frag");
 
-	// Create model, view and projection matrices for the shader
-	glm::mat4 mat_model = glm::mat4(1.0f);
-
-	mat_model = glm::scale(mat_model, glm::vec3(1.5f, 1.5f, 1.5f));
-
-	shader.setUniform("u_model", mat_model);
-
 	mWindow.setShader(&shader);
 
 	glewExperimental = GL_TRUE;
