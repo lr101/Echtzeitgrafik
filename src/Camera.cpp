@@ -2,7 +2,7 @@
 
 Camera::Camera(glm::vec3 cameraPostition) {
 	std::cout << "camera position: " << cameraPostition[0] << ", " << cameraPostition[1] << ", " << cameraPostition[2] << std::endl;
-	this->cameraPostition = glm::vec3(3.f, 0.f, 10.f);
+	this->cameraPostition = cameraPostition;
 }
 
 Camera::~Camera() {

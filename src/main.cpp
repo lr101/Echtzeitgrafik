@@ -120,8 +120,6 @@ int main()
        
     }
 
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
     delete scene;
 
     glfwTerminate();
