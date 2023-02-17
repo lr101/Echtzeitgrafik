@@ -1,7 +1,21 @@
 #include "Scene.hpp"
 
-Scene::Scene(const aiScene* scene)
+Scene::Scene(std::string fileName)
 {
+	// import scene
+	Assimp::Importer importer;
+	std::string scene_file = std::string(std::filesystem::current_path().generic_string()).append("/../res/").append(fileName);
+	const aiScene* scene = importer.ReadFile(scene_file,
+		aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
+		aiProcess_SortByPType | aiProcess_PreTransformVertices);
+	// If the import failed, report it
+	if (!scene) {
+		std::cerr << "Importing of 3D scene failed: " << importer.GetErrorString() << std::endl;
+	}
+	else {
+		std::cout << "Import of '" << fileName << "' at: " << scene_file << " successfull" << std::endl;
+	}
+	// init scene
 	this->processMeshes(scene);
 	this->processLights(scene);
 	this->processCamera(scene);
@@ -33,8 +47,10 @@ void Scene::processCamera(const aiScene* scene)
 {
 	for (int i = 0; i < scene->mNumCameras; i++) {
 		aiVector3D point = scene->mCameras[i]->mPosition;
+		aiVector3D look = scene->mCameras[i]->mLookAt;
 		glm::vec3 position = glm::vec3(point.x, point.y, point.z);
-		this->camera = std::make_unique<Camera>(position);
+		glm::vec3 lookAt = glm::vec3(look.x, look.y, look.z);
+		this->camera = std::make_unique<Camera>(position, lookAt);
 	}
 }
 
@@ -67,7 +83,7 @@ void Scene::processMeshes(const aiScene* scene) {
 		std::cout << "Num incides: " << indices.size() << std::endl;
 
 		// ------ here hard coded what mash 1 & 2 get as values, 
-		//		  can be done differently if model contains such values
+		//		  can be done differently if scene file contains such values
 		const float speed = (i == 0) ? 0.1f : -0.3f;
 
 		// create and save mash
@@ -87,4 +103,21 @@ void Scene::processLights(const aiScene* scene)
 		this->light = std::make_unique<PointLight>(lightPos, lightCol);
 	}
 	
+}
+
+const aiScene* Scene::loadScene(std::string fileName) {
+	// Create an instance of the Importer class
+	Assimp::Importer importer;
+	std::string scene_file = std::string(std::filesystem::current_path().generic_string()).append("/../res/").append(fileName);
+	const aiScene* scene = importer.ReadFile(scene_file,
+		aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
+		aiProcess_SortByPType | aiProcess_PreTransformVertices);
+	// If the import failed, report it
+	if (!scene) {
+		std::cerr << "Importing of 3D scene failed: " << importer.GetErrorString() << std::endl;
+	}
+	else {
+		std::cout << "Import of '" << fileName << "' at: " << scene_file << " successfull" << std::endl;
+	}
+	return scene;
 }

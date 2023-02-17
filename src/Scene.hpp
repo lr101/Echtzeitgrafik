@@ -2,18 +2,23 @@
 
 #include <vector>
 
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <glm/glm.hpp>
 #include "Mesh.hpp"
 #include "Shader.h"
 #include "PointLight.h"
 #include "Camera.h"
+#include <filesystem>
+#include "helper/RootDir.h"
+#include <iostream>
 
 class Scene
 {
 public:
 
-	Scene(const aiScene* scene);
+	Scene(std::string fileName);
 
 	void render(Shader& shader);
 
@@ -28,6 +33,8 @@ private:
 	void processLights(const aiScene* scene);
 
 	void processCamera(const aiScene* scene);
+
+	const aiScene* loadScene(std::string fileName);
 
 	std::vector<Mesh2*> meshes;
 

@@ -3,9 +3,6 @@
 #define GLEW_STATIC
 #include <GL/glew.h> // has to be included first!
 #include <GLFW/glfw3.h>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -20,7 +17,6 @@
 #include <iostream>
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-Scene* loadScene();
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 // Window dimensions
@@ -70,7 +66,7 @@ int main()
     shader.setUniform("u_projection", mat_projection);
 
 
-    Scene* scene = loadScene();
+    Scene scene = Scene("test_scenedae.sec");
 
     // For calculating fps
     GLdouble lastTime = glfwGetTime();
@@ -78,7 +74,7 @@ int main()
 
     
 
-    scene->setUniforms(shader);
+    scene.setUniforms(shader);
     
     while (!glfwWindowShouldClose(window))
     {
@@ -95,7 +91,7 @@ int main()
        
 
         //render the vertices in GeometryBuffer
-        scene->render(shader);
+        scene.render(shader);
 
         // Swap the screen buffers
         glfwSwapBuffers(window);
@@ -112,7 +108,7 @@ int main()
        
     }
 
-    delete scene;
+
 
     glfwTerminate();
     return 0;
@@ -138,20 +134,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
-Scene* loadScene() {
-    // Create an instance of the Importer class
-    Assimp::Importer importer;
-    std::string path = std::filesystem::current_path().generic_string();
-    std::string scene_file = std::string(path).append("/../res/test_scenedae.sec");
-    const aiScene* scene = importer.ReadFile(scene_file,
-        aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-        aiProcess_SortByPType | aiProcess_PreTransformVertices);
-    // If the import failed, report it
-    if (!scene) {
-        std::cerr << "Importing of 3D scene failed: " << importer.GetErrorString() << std::endl;
-    }
-    return new Scene(scene);
-}
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
