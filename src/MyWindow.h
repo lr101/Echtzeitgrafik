@@ -1,21 +1,18 @@
 #pragma once
 
 #define GLEW_STATIC
-#include <GL/glew.h> // has to be included first!
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <assimp/Importer.hpp>
 #include <glm/ext.hpp>
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 #include "Shader.h"
 
 class MyWindow
 {
-	GLFWwindow* mWindow;
-	bool projection_type;
-	glm::mat4 mat_projection;
-	Shader* shader;
+	GLFWwindow* m_window_;
+	bool projection_type_;
+	glm::mat4 mat_projection_;
+	Shader* shader_;
 
 public:
 	MyWindow(int width, int height, const char* name);
@@ -24,7 +21,7 @@ public:
 
 	void onKey(int key, int scancode, int actions, int mods);
 	void onResize(int width, int height);
-	GLFWwindow* getWindow();
+	GLFWwindow* getWindow() const;
 	void setShader(Shader* shader);
 
 private:

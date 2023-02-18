@@ -1,25 +1,21 @@
 #pragma once
 
 #define GLEW_STATIC
-#include <GL/glew.h> // has to be included first!
-#include <GLFW/glfw3.h>
-#include <assimp/Importer.hpp>
 #include <glm/ext.hpp>
-#include <ft2build.h>
-#include FT_FREETYPE_H
+#include <iostream>
 
 #include "Shader.h"
 
 class PointLight
 {
-	glm::vec3 lightPos;
-	glm::vec3 lightCol;
+	glm::vec3 light_pos_;
+	glm::vec3 light_col_;
 
 public:
-	PointLight(glm::vec3 lightPos, glm::vec3 lightCol);
+	PointLight(glm::vec3 light_pos, glm::vec3 light_col);
 	PointLight(const PointLight& light);
-	~PointLight();
+	~PointLight() = default;
 
-	void setUniforms(Shader& shader);
-	void apply_mat(Shader& shader, glm::mat4 mat_model);
+	void set_uniforms(Shader& shader) const;
+	void apply_mat(Shader& shader, const glm::mat4 mat_model) const;
 };

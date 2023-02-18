@@ -1,39 +1,30 @@
 #pragma once
-#include <iostream>
-#include <algorithm>
-#include <iterator>
-#include <vector>
 
 #define GLEW_STATIC
 #include <GL/glew.h> // has to be included first!
-#include <GLFW/glfw3.h>
-#include <assimp/Importer.hpp>
-#include <glm/glm.hpp>
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 class GeometryBuffer
 {
-	GLuint m_vao;
-	GLuint m_vbo;
-	GLuint m_ebo;
-	GLuint vertexAmount;
-	GLboolean useIndices;
+	GLuint m_vao_;
+	GLuint m_vbo_;
+	GLuint m_ebo_;
+	GLuint vertex_amount_;
+	GLboolean use_indices_;
 
-	void setVertices(GLfloat* vertices, GLuint size);
-	void setIndices(GLuint* indices, GLuint size, GLuint vertexAmount);
-	void bindVAO();
-	void bindVBO();
-	void bindEBO();
-	void unbindVAO();
-	void unbindVBO();
+	void set_vertices(GLfloat* vertices, const GLuint size) const;
+	void set_indices(GLuint* indices, const GLuint size) const;
+	void bind_vao() const;
+	void bind_vbo() const;
+	void bind_ebo() const;
+	void unbind_vao() const;
+	void unbind_vbo() const;
 
 public:
-	GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices[], GLuint i_size, GLuint vertexAmount);
-	GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint vertexAmount);
+	GeometryBuffer(GLfloat vertices[], const GLuint v_size, GLuint indices[], const GLuint i_size, const GLuint vertex_amount);
+	GeometryBuffer(GLfloat vertices[], const GLuint v_size, const GLuint vertex_amount);
 	GeometryBuffer(const GeometryBuffer& buffer);
 	~GeometryBuffer();
 
-	void draw();
-	void setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset);
+	void draw() const;
+	void set_attributes(const GLuint index, const GLint size, const GLenum type, const GLsizei stride, const GLvoid* offset) const;
 };

@@ -1,54 +1,50 @@
 #include "Shader.h"
 
-Shader::Shader(const char* vertexFileName, const char* fragmentFileName)
+Shader::Shader(const char* p_vertex, const char* p_fragment)
 {
 	glewInit();
-	this->s_vertex = glCreateShader(GL_VERTEX_SHADER);
-	this->s_fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	compile(&this->s_vertex, load(getPath(vertexFileName).c_str()).c_str());
-	compile(&this->s_fragment, load(getPath(fragmentFileName).c_str()).c_str());
+	this->s_vertex_ = glCreateShader(GL_VERTEX_SHADER);
+	this->s_fragment_ = glCreateShader(GL_FRAGMENT_SHADER);
+	compile(&this->s_vertex_, load(getPath(p_vertex).c_str()).c_str());
+	compile(&this->s_fragment_, load(getPath(p_fragment).c_str()).c_str());
 	link();
 	// Bind prog to the opengl context
-	glUseProgram(this->s_prog);
+	glUseProgram(this->s_prog_);
 	// Remove compiled shader objects
-	glDeleteShader(this->s_vertex);
-	glDeleteShader(this->s_fragment);
+	glDeleteShader(this->s_vertex_);
+	glDeleteShader(this->s_fragment_);
 }
 
 Shader::Shader(const Shader& shader)
 {
-	this->s_fragment = shader.s_fragment;
-	this->s_prog = shader.s_prog;
-	this->s_vertex = shader.s_vertex;
+	this->s_fragment_ = shader.s_fragment_;
+	this->s_prog_ = shader.s_prog_;
+	this->s_vertex_ = shader.s_vertex_;
 }
 
-Shader::~Shader()
+GLint Shader::getUniform(const char* name) const
 {
-}
-
-GLint Shader::getUniform(const char* name)
-{
-	GLint location = glGetUniformLocation(this->s_prog, name);
-	glUseProgram(this->s_prog);
+	const GLint location = glGetUniformLocation(this->s_prog_, name);
+	glUseProgram(this->s_prog_);
 	return location;
 }
 
-void Shader::setUniform(const char* name, GLint val)
+void Shader::setUniform(const char* name, const GLint val)
 {
 	glUniform1i(getUniform(name), val);
 }
 
-void Shader::setUniform(const char* name, GLfloat val)
+void Shader::setUniform(const char* name, const GLfloat val)
 {
 	glUniform1f(getUniform(name), val);
 }
 
-void Shader::setUniform(const char* name, glm::vec3 val)
+void Shader::setUniform(const char* name, const glm::vec3 val)
 {
 	glUniform3f(getUniform(name), val.x, val.y, val.z);
 }
 
-void Shader::setUniform(const char* name, glm::vec4 val)
+void Shader::setUniform(const char* name, const glm::vec4 val)
 {
 	glUniform4f(getUniform(name), val.x, val.y, val.z, val.w);
 }
@@ -63,12 +59,12 @@ std::string Shader::load(const char* src)
 	try
 	{
 		// open files
-		std::ifstream shaderFile;
-		shaderFile.open(src);
+		std::ifstream shader_file;
+		shader_file.open(src);
 		std::stringstream shaderStream;
 		// read file's buffer contents into streams
-		shaderStream << shaderFile.rdbuf();
-		shaderFile.close();
+		shaderStream << shader_file.rdbuf();
+		shader_file.close();
 		// convert stream into string
 		return shaderStream.str();
 	}
@@ -96,25 +92,25 @@ void Shader::compile(GLuint* s, const char* s_src)
 
 void Shader::link()
 {
-	this->s_prog = glCreateProgram();
-	glAttachShader(this->s_prog, this->s_vertex);
-	glAttachShader(this->s_prog, this->s_fragment);
-	glLinkProgram(this->s_prog);
+	this->s_prog_ = glCreateProgram();
+	glAttachShader(this->s_prog_, this->s_vertex_);
+	glAttachShader(this->s_prog_, this->s_fragment_);
+	glLinkProgram(this->s_prog_);
 	GLint success;
 	GLchar infoLog[512];
-	glGetProgramiv(this->s_prog, GL_LINK_STATUS, &success);
+	glGetProgramiv(this->s_prog_, GL_LINK_STATUS, &success);
 	if (!success)
 	{
-		glGetProgramInfoLog(this->s_prog, 512, nullptr, infoLog);
+		glGetProgramInfoLog(this->s_prog_, 512, nullptr, infoLog);
 		std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 }
 
-std::string Shader::getPath(const char* fileName)
+std::string Shader::getPath(const char* file_name) const
 {
 	try
 	{
-		return std::string(std::filesystem::current_path().generic_string()).append("/../res/").append(fileName);
+		return std::string(std::filesystem::current_path().generic_string()).append("/../res/").append(file_name);
 	}
 	catch (std::exception& e)
 	{

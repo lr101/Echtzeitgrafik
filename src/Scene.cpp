@@ -1,6 +1,6 @@
 #include "Scene.hpp"
 
-Scene::Scene(std::string fileName, const GLfloat rot_per_frame, const glm::vec3 rot_mat)
+Scene::Scene(std::string file_name, const GLfloat rot_per_frame, const glm::vec3 rot_mat)
 {
 	this->rot_per_frame_ = rot_per_frame;
 	this->rot_mat_ = rot_mat;
@@ -8,7 +8,7 @@ Scene::Scene(std::string fileName, const GLfloat rot_per_frame, const glm::vec3 
 	// import scene
 	Assimp::Importer importer;
 	std::string scene_file = std::string(std::filesystem::current_path().generic_string()).append("/../res/").
-		append(fileName);
+		append(file_name);
 	const aiScene* scene = importer.ReadFile(scene_file,
 	                                         aiProcess_CalcTangentSpace | aiProcess_Triangulate |
 	                                         aiProcess_JoinIdenticalVertices |
@@ -20,12 +20,12 @@ Scene::Scene(std::string fileName, const GLfloat rot_per_frame, const glm::vec3 
 	}
 	else
 	{
-		std::cout << "Import of '" << fileName << "' at: " << scene_file << " successfull" << std::endl;
+		std::cout << "Import of '" << file_name << "' at: " << scene_file << " successfull" << std::endl;
 	}
 	// init scene
-	this->processMeshes(scene);
-	this->processLights(scene);
-	this->processCamera(scene);
+	this->process_meshes(scene);
+	this->process_lights(scene);
+	this->process_camera(scene);
 }
 
 Scene::Scene(const Scene& scene)
@@ -33,113 +33,99 @@ Scene::Scene(const Scene& scene)
 	this->rot_per_frame_ = scene.rot_per_frame_;
 	this->rot_mat_ = scene.rot_mat_;
 	this->camera_ = std::make_unique<Camera>(*(scene.camera_));
-	this->light = std::make_unique<PointLight>(*(scene.light));
-	for (auto& m : scene.meshes)
+	this->light_ = std::make_unique<PointLight>(*(scene.light_));
+	for (auto& m : scene.meshes_)
 	{
-		this->meshes.push_back(std::make_unique<Mesh>(*(m)));
+		this->meshes_.push_back(std::make_unique<Mesh>(*(m)));
 	}
 }
 
 Scene::~Scene()
 {
-	this->meshes.clear();
+	this->meshes_.clear();
 }
 
 void Scene::render(Shader& shader)
 {
 	const glm::mat4 tmp_mat_model = glm::rotate(this->mat_model_, this->rot_amount_, this->rot_mat_);
 	this->rot_amount_ = glm::radians(this->rot_per_frame_ + glm::degrees(this->rot_amount_));
-	for (int i = 0; i < meshes.size(); i++)
+	this->light_->apply_mat(shader, tmp_mat_model);
+	for (auto const& i : meshes_)
 	{
-		meshes[i]->render(shader, tmp_mat_model);
-		this->light->apply_mat(shader, tmp_mat_model);
+		i->render(shader, tmp_mat_model);
 	}
 }
 
-void Scene::setUniforms(Shader& shader)
+void Scene::set_uniforms(Shader& shader) const
 {
-	light->setUniforms(shader);
-	camera_->setUniforms(shader);
+	light_->set_uniforms(shader);
+	camera_->set_uniforms(shader);
 }
 
-void Scene::processCamera(const aiScene* scene)
+void Scene::process_camera(const aiScene* scene)
 {
 	for (int i = 0; i < scene->mNumCameras; i++)
 	{
-		aiVector3D point = scene->mCameras[i]->mPosition;
-		aiVector3D look = scene->mCameras[i]->mLookAt;
+		const aiVector3D point = scene->mCameras[i]->mPosition;
+		const aiVector3D look = scene->mCameras[i]->mLookAt;
 		auto position = glm::vec3(point.x, point.y, point.z);
-		auto lookAt = glm::vec3(look.x, look.y, look.z);
-		this->camera_ = std::make_unique<Camera>(position, lookAt);
+		auto look_at = glm::vec3(look.x, look.y, look.z);
+		this->camera_ = std::make_unique<Camera>(position, look_at);
 	}
 }
 
-void Scene::processMeshes(const aiScene* scene)
+void Scene::process_meshes(const aiScene* scene)
 {
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
 		std::vector<float> vertices;
-		// TODO: Names are shit
-		aiMesh* aiMesh = scene->mMeshes[i];
-		aiColor4D* aiColor = aiMesh->mColors[0];
-		glm::vec4 objColor(aiColor->r, aiColor->g, aiColor->b, aiColor->a);
-		for (unsigned int j = 0; j < aiMesh->mNumVertices; j++)
+		const aiMesh* ai_mesh = scene->mMeshes[i];
+		const aiColor4D* ai_color = ai_mesh->mColors[0];
+		glm::vec4 obj_color(ai_color->r, ai_color->g, ai_color->b, ai_color->a);
+		for (unsigned int j = 0; j < ai_mesh->mNumVertices; j++)
 		{
-			// TODO: Copy the vertex data into the vector "vertices"
-			for (int z = 0; z < 6; z++)
-			{
-				switch (z)
-				{
-				case 0: vertices.push_back(aiMesh->mVertices[j].x);
-					break;
-				case 1: vertices.push_back(aiMesh->mVertices[j].y);
-					break;
-				case 2: vertices.push_back(aiMesh->mVertices[j].z);
-					break;
-				case 3: vertices.push_back(aiMesh->mNormals[j].x);
-					break;
-				case 4: vertices.push_back(aiMesh->mNormals[j].y);
-					break;
-				case 5: vertices.push_back(aiMesh->mNormals[j].z);
-					break;
-				}
-			}
+			vertices.push_back(ai_mesh->mVertices[j].x);
+			vertices.push_back(ai_mesh->mVertices[j].y);
+			vertices.push_back(ai_mesh->mVertices[j].z);
+			vertices.push_back(ai_mesh->mNormals[j].x);
+			vertices.push_back(ai_mesh->mNormals[j].y);
+			vertices.push_back(ai_mesh->mNormals[j].z);
 		}
 
 		std::vector<uint32_t> indices;
-		for (unsigned int k = 0; k < aiMesh->mNumFaces; k++)
+		for (unsigned int k = 0; k < ai_mesh->mNumFaces; k++)
 		{
-			aiFace& face = aiMesh->mFaces[k];
+			const aiFace& face = ai_mesh->mFaces[k];
 			for (unsigned int j = 0; j < face.mNumIndices; j++)
 				indices.push_back(face.mIndices[j]);
 		}
 		std::cout << "Num vertices (& normals): " << vertices.size() << std::endl;
-		std::cout << "Num incides: " << indices.size() << std::endl;
+		std::cout << "Num indices: " << indices.size() << std::endl;
 
 		// create and save mash
-		this->meshes.push_back(std::make_unique<Mesh>(vertices, indices, objColor));
+		this->meshes_.push_back(std::make_unique<Mesh>(vertices, indices, obj_color));
 	}
-	std::cout << "Num meshes: " << this->meshes.size() << std::endl;
+	std::cout << "Num meshes: " << this->meshes_.size() << std::endl;
 }
 
-void Scene::processLights(const aiScene* scene)
+void Scene::process_lights(const aiScene* scene)
 {
 	for (int i = 0; i < scene->mNumLights; i++)
 	{
-		aiColor3D color = scene->mLights[i]->mColorDiffuse;
-		aiVector3D point = scene->mLights[i]->mPosition;
-		auto lightCol = glm::vec3(color.r, color.g, color.b);
-		auto lightPos = glm::vec3(point.x, point.y, point.z);
-		this->light = std::make_unique<PointLight>(lightPos, lightCol);
+		const aiColor3D color = scene->mLights[i]->mColorDiffuse;
+		const aiVector3D point = scene->mLights[i]->mPosition;
+		auto light_col = glm::vec3(color.r, color.g, color.b);
+		auto light_pos = glm::vec3(point.x, point.y, point.z);
+		this->light_ = std::make_unique<PointLight>(light_pos, light_col);
 	}
 }
 
-const aiScene* Scene::loadScene(std::string fileName)
+const aiScene* Scene::load_scene(const std::string file_name) const
 {
 	// Create an instance of the Importer class
 	Assimp::Importer importer;
-	std::string scene_file = std::string(std::filesystem::current_path().generic_string()).append("/../res/").
-		append(fileName);
+	const std::string scene_file = std::string(std::filesystem::current_path().generic_string()).append("/../res/").
+		append(file_name);
 	const aiScene* scene = importer.ReadFile(scene_file,
 	                                         aiProcess_CalcTangentSpace | aiProcess_Triangulate |
 	                                         aiProcess_JoinIdenticalVertices |
@@ -151,7 +137,7 @@ const aiScene* Scene::loadScene(std::string fileName)
 	}
 	else
 	{
-		std::cout << "Import of '" << fileName << "' at: " << scene_file << " successfull" << std::endl;
+		std::cout << "Import of '" << file_name << "' at: " << scene_file << " successful" << std::endl;
 	}
 	return scene;
 }

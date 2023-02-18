@@ -1,110 +1,110 @@
 #include "GeometryBuffer.h"
 
-GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices[], GLuint i_size, GLuint vertexAmount)
+GeometryBuffer::GeometryBuffer(GLfloat vertices[], const GLuint v_size, GLuint indices[], const GLuint i_size, const GLuint vertex_amount)
 {
-	this->useIndices = true;
-	this->vertexAmount = vertexAmount;
-	glGenVertexArrays(1, &m_vao);
-	glGenBuffers(1, &m_vbo);
-	glGenBuffers(1, &m_ebo);
-	bindVAO();
-	bindEBO();
-	unbindVAO();
-	setVertices(vertices, v_size);
-	setIndices(indices, i_size, vertexAmount);
+	this->use_indices_ = true;
+	this->vertex_amount_ = vertex_amount;
+	glGenVertexArrays(1, &m_vao_);
+	glGenBuffers(1, &m_vbo_);
+	glGenBuffers(1, &m_ebo_);
+	bind_vao();
+	bind_ebo();
+	unbind_vao();
+	set_vertices(vertices, v_size);
+	set_indices(indices, i_size);
 }
 
-GeometryBuffer::GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint vertexAmount)
+GeometryBuffer::GeometryBuffer(GLfloat vertices[], const GLuint v_size, const GLuint vertex_amount)
 {
-	this->useIndices = false;
-	this->vertexAmount = vertexAmount;
-	glGenVertexArrays(1, &m_vao);
-	glGenBuffers(1, &m_vbo);
-	bindVAO();
-	bindEBO();
-	unbindVAO();
-	setVertices(vertices, v_size);
+	this->use_indices_ = false;
+	this->vertex_amount_ = vertex_amount;
+	glGenVertexArrays(1, &m_vao_);
+	glGenBuffers(1, &m_vbo_);
+	bind_vao();
+	bind_ebo();
+	unbind_vao();
+	set_vertices(vertices, v_size);
 }
 
 GeometryBuffer::GeometryBuffer(const GeometryBuffer& buffer)
 {
-	this->m_ebo = buffer.m_ebo;
-	this->m_vao = buffer.m_vao;
-	this->m_vbo = buffer.m_vbo;
-	this->vertexAmount = buffer.vertexAmount;
-	this->useIndices = buffer.useIndices;
+	this->m_ebo_ = buffer.m_ebo_;
+	this->m_vao_ = buffer.m_vao_;
+	this->m_vbo_ = buffer.m_vbo_;
+	this->vertex_amount_ = buffer.vertex_amount_;
+	this->use_indices_ = buffer.use_indices_;
 }
 
 GeometryBuffer::~GeometryBuffer()
 {
-	glDeleteVertexArrays(1, &m_vao);
-	glDeleteBuffers(1, &m_vbo);
-	glDeleteBuffers(1, &m_ebo);
+	glDeleteVertexArrays(1, &m_vao_);
+	glDeleteBuffers(1, &m_vbo_);
+	glDeleteBuffers(1, &m_ebo_);
 }
 
-void GeometryBuffer::setVertices(GLfloat* vertices, GLuint size)
+void GeometryBuffer::set_vertices(GLfloat* vertices, const GLuint size) const
 {
-	bindVAO();
-	bindVBO();
+	this->bind_vao();
+	this->bind_vbo();
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-	unbindVAO();
-	unbindVBO();
+	this->unbind_vao();
+	this->unbind_vbo();
 }
 
-void GeometryBuffer::setIndices(GLuint* indices, GLuint size, GLuint vertexAmount)
+void GeometryBuffer::set_indices(GLuint* indices, const GLuint size) const
 {
-	bindVAO();
-	bindVBO();
+	this->bind_vao();
+	this->bind_vbo();
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
-	unbindVAO();
-	unbindVBO();
+	this->unbind_vao();
+	this->unbind_vbo();
 }
 
-void GeometryBuffer::setAttributes(GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid* offset)
+void GeometryBuffer::set_attributes(const GLuint index, const GLint size, const GLenum type, const GLsizei stride, const GLvoid* offset) const
 {
-	bindVAO();
-	bindVBO();
+	this->bind_vao();
+	this->bind_vbo();
 	glVertexAttribPointer(index, size, type, GL_FALSE, stride, offset);
 	glEnableVertexAttribArray(index);
-	unbindVBO();
-	unbindVAO();
+	this->unbind_vbo();
+	this->unbind_vao();
 }
 
-void GeometryBuffer::draw()
+void GeometryBuffer::draw() const
 {
-	bindVAO();
-	if (this->useIndices)
+	this->bind_vao();
+	if (this->use_indices_)
 	{
-		glDrawElements(GL_TRIANGLES, this->vertexAmount, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, this->vertex_amount_, GL_UNSIGNED_INT, nullptr);
 	}
 	else
 	{
-		glDrawArrays(GL_TRIANGLES, 0, this->vertexAmount);
+		glDrawArrays(GL_TRIANGLES, 0, this->vertex_amount_);
 	}
-	unbindVAO();
+	this->unbind_vao();
 }
 
-void GeometryBuffer::bindVAO()
+void GeometryBuffer::bind_vao() const
 {
-	glBindVertexArray(m_vao);
+	glBindVertexArray(m_vao_);
 }
 
-void GeometryBuffer::bindVBO()
+void GeometryBuffer::bind_vbo() const
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_);
 }
 
-void GeometryBuffer::bindEBO()
+void GeometryBuffer::bind_ebo() const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo_);
 }
 
-void GeometryBuffer::unbindVAO()
+void GeometryBuffer::unbind_vao() const
 {
 	glBindVertexArray(0);
 }
 
-void GeometryBuffer::unbindVBO()
+void GeometryBuffer::unbind_vbo() const
 {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

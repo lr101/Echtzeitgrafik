@@ -1,30 +1,21 @@
 #define GLEW_STATIC
 
-#include <GL/glew.h> // has to be included first!
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <ft2build.h>
 #include <filesystem>
-#include "helper/RootDir.h"
-#include FT_FREETYPE_H
+#include <iostream>
 
-#include "GeometryBuffer.h"
 #include "Shader.h"
 #include "Scene.hpp"
 #include "MyWindow.h"
-#include <iostream>
 
 
 // Window dimensions
 int WIDTH = 800.f, HEIGHT = 600.f;
 
-const char* vertexShader = "shader.vert";
-const char* fragmentShader = "shader.frag";
+const char* vertex_shader = "shader.vert";
+const char* fragment_shader = "shader.frag";
 
 int main()
 {
@@ -40,12 +31,12 @@ int main()
 	glEnable(GL_MULTISAMPLE);
 
 	// initialize window
-	MyWindow mWindow(WIDTH, HEIGHT, "Window");
+	MyWindow m_window(WIDTH, HEIGHT, "Window");
 
-	// build and compile shaders
+	// build and compile shader
 	Shader shader("shader.vert", "shader.frag");
 
-	mWindow.setShader(&shader);
+	m_window.setShader(&shader);
 
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -53,17 +44,17 @@ int main()
 	auto scene = Scene("test_scenedae.sec", 0.01f, glm::vec3(0.f, 1.f, 0.f));
 
 	// For calculating fps
-	GLdouble lastTime = glfwGetTime();
-	GLuint nbFrames = 0;
+	GLdouble last_time = glfwGetTime();
+	GLuint nb_frames = 0;
 
-	scene.setUniforms(shader);
+	scene.set_uniforms(shader);
 
-	while (!glfwWindowShouldClose(mWindow.getWindow()))
+	while (!glfwWindowShouldClose(m_window.getWindow()))
 	{
-		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
+		// Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 		// Render
-		// Clear the colorbuffer
+		// Clear the color buffer
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -71,17 +62,17 @@ int main()
 		scene.render(shader);
 
 		// Swap the screen buffers
-		glfwSwapBuffers(mWindow.getWindow());
+		glfwSwapBuffers(m_window.getWindow());
 
 
 		// Calc fps
-		GLdouble currentTime = glfwGetTime();
-		nbFrames++;
-		if (currentTime - lastTime >= 1.0)
+		const GLdouble current_time = glfwGetTime();
+		nb_frames++;
+		if (current_time - last_time >= 1.0)
 		{
-			std::cout << "fps = " << static_cast<double>(nbFrames) << std::endl;
-			nbFrames = 0;
-			lastTime += 1.0;
+			std::cout << "fps = " << static_cast<double>(nb_frames) << std::endl;
+			nb_frames = 0;
+			last_time += 1.0;
 		}
 	}
 

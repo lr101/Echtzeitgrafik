@@ -1,35 +1,31 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 cameraPostition_, glm::vec3 lookAt_)
+Camera::Camera(glm::vec3 camera_position, glm::vec3 look_at)
 {
-	std::cout << "camera position: " << cameraPostition_[0] << ", " << cameraPostition_[1] << ", " << cameraPostition_[
+	std::cout << "camera position: " << camera_position[0] << ", " << camera_position[1] << ", " << camera_position[
 		2] << std::endl;
-	std::cout << "look at: " << lookAt_[0] << ", " << lookAt_[1] << ", " << lookAt_[2] << std::endl;
-	this->cameraPostition = cameraPostition_;
-	this->lookAt = lookAt_;
+	std::cout << "look at: " << look_at[0] << ", " << look_at[1] << ", " << look_at[2] << std::endl;
+	this->camera_position_ = camera_position;
+	this->look_at_ = look_at;
 }
 
 Camera::Camera(const Camera& camera)
 {
-	this->cameraPostition = camera.cameraPostition;
-	this->lookAt = camera.lookAt;
+	this->camera_position_ = camera.camera_position_;
+	this->look_at_ = camera.look_at_;
 }
 
-Camera::~Camera()
-{
-}
 
-void Camera::setUniforms(Shader& shader)
+void Camera::set_uniforms(Shader& shader) const
 {
 	//set position and view
-	glm::vec3 cameraDirection = normalize(this->cameraPostition - this->lookAt);
-	std::cout << "Camera direction: " << cameraDirection.x << ", " << cameraDirection.x << ", " << cameraDirection.x <<
+	const glm::vec3 camera_direction = normalize(this->camera_position_ - this->look_at_);
+	std::cout << "Camera direction: " << camera_direction.x << ", " << camera_direction.x << ", " << camera_direction.x <<
 		std::endl;
-	auto up = glm::vec3(0.0f, 1.0f, 0.0f);
-	glm::vec3 cameraRight = normalize(cross(up, cameraDirection));
-	glm::vec3 cameraUp = cross(cameraDirection, cameraRight);
-	glm::mat4 view;
-	view = glm::lookAt(this->cameraPostition, this->lookAt, cameraUp);
+	const auto up = glm::vec3(0.0f, 1.0f, 0.0f);
+	const glm::vec3 camera_right = normalize(cross(up, camera_direction));
+	const glm::vec3 camera_up = cross(camera_direction, camera_right);
+	const glm::mat4 view = glm::lookAt(this->camera_position_, this->look_at_, camera_up);
 	shader.setUniform("u_view", view);
-	shader.setUniform("u_viewPos", cameraPostition);
+	shader.setUniform("u_viewPos", camera_position_);
 }
