@@ -1,9 +1,10 @@
 #include "Scene.hpp"
 
-Scene::Scene(std::string file_name, const GLfloat rot_per_frame, const glm::vec3 rot_mat)
+Scene::Scene(std::string file_name, const GLfloat rot_per_second, const glm::vec3 rot_mat)
 {
-	this->rot_per_frame_ = rot_per_frame;
+	this->rot_per_second_ = rot_per_second;
 	this->rot_mat_ = rot_mat;
+	this->old_time_ = glfwGetTime();
 
 	// import scene
 	Assimp::Importer importer;
@@ -20,7 +21,7 @@ Scene::Scene(std::string file_name, const GLfloat rot_per_frame, const glm::vec3
 	}
 	else
 	{
-		std::cout << "Import of '" << file_name << "' at: " << scene_file << " successfull" << std::endl;
+		std::cout << "Import of '" << file_name << "' at: " << scene_file << " successful" << std::endl;
 	}
 	// init scene
 	this->process_meshes(scene);
@@ -30,10 +31,11 @@ Scene::Scene(std::string file_name, const GLfloat rot_per_frame, const glm::vec3
 
 Scene::Scene(const Scene& scene)
 {
-	this->rot_per_frame_ = scene.rot_per_frame_;
+	this->rot_per_second_ = scene.rot_per_second_;
 	this->rot_mat_ = scene.rot_mat_;
 	this->camera_ = std::make_unique<Camera>(*(scene.camera_));
 	this->light_ = std::make_unique<PointLight>(*(scene.light_));
+	this->old_time_ = scene.old_time_;
 	for (auto& m : scene.meshes_)
 	{
 		this->meshes_.push_back(std::make_unique<Mesh>(*(m)));
@@ -47,8 +49,12 @@ Scene::~Scene()
 
 void Scene::render(Shader& shader)
 {
+	const double time = glfwGetTime();
+	const double delta_time = (time - this->old_time_);
+	this->old_time_ = time;
+
 	const glm::mat4 tmp_mat_model = glm::rotate(this->mat_model_, this->rot_amount_, this->rot_mat_);
-	this->rot_amount_ = glm::radians(this->rot_per_frame_ + glm::degrees(this->rot_amount_));
+	this->rot_amount_ = glm::radians(static_cast<GLfloat>(this->rot_per_second_ * delta_time) + glm::degrees(this->rot_amount_));
 	this->light_->apply_mat(shader, tmp_mat_model);
 	for (auto const& i : meshes_)
 	{

@@ -2,10 +2,12 @@
 
 #include <vector>
 
+#include <GL/glew.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <glm/glm.hpp>
+#include <glfw/glfw3.h>
 #include "Mesh.hpp"
 #include "Shader.h"
 #include "PointLight.h"
@@ -25,12 +27,13 @@ class Scene
 	std::unique_ptr<Camera> camera_;
 	std::unique_ptr<PointLight> light_;
 	GLfloat rot_amount_ = glm::radians(0.f);
-	GLfloat rot_per_frame_;
+	GLfloat rot_per_second_;
 	glm::vec3 rot_mat_;
 	glm::mat4 mat_model_ = glm::mat4(1.f);
+	double old_time_;
 
 public:
-	Scene(std::string file_name, const GLfloat rot_per_frame, glm::vec3 rot_mat);
+	Scene(std::string file_name, const GLfloat rot_per_second, glm::vec3 rot_mat);
 	Scene(const Scene& scene);
 	~Scene();
 

@@ -41,7 +41,7 @@ int main()
 	glewExperimental = GL_TRUE;
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-	auto scene = Scene("test_scenedae.sec", 0.01f, glm::vec3(0.f, 1.f, 0.f));
+	auto scene = Scene("test_scenedae.sec", 10.f, glm::vec3(0.f, 1.f, 0.f));
 
 	// For calculating fps
 	GLdouble last_time = glfwGetTime();
