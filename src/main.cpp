@@ -1,5 +1,3 @@
-
-
 #define GLEW_STATIC
 
 #include <GL/glew.h> // has to be included first!
@@ -28,7 +26,8 @@ int WIDTH = 800.f, HEIGHT = 600.f;
 const char* vertexShader = "shader.vert";
 const char* fragmentShader = "shader.frag";
 
-int main() {
+int main()
+{
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
@@ -51,7 +50,7 @@ int main() {
 	glewExperimental = GL_TRUE;
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-	Scene scene = Scene("test_scenedae.sec");
+	auto scene = Scene("test_scenedae.sec", 0.01f, glm::vec3(0.f, 1.f, 0.f));
 
 	// For calculating fps
 	GLdouble lastTime = glfwGetTime();
@@ -59,7 +58,8 @@ int main() {
 
 	scene.setUniforms(shader);
 
-	while (!glfwWindowShouldClose(mWindow.getWindow())) {
+	while (!glfwWindowShouldClose(mWindow.getWindow()))
+	{
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 		// Render
@@ -77,15 +77,13 @@ int main() {
 		// Calc fps
 		GLdouble currentTime = glfwGetTime();
 		nbFrames++;
-		if (currentTime - lastTime >= 1.0) {
-			std::cout << "fps = " << double(nbFrames) << std::endl;
+		if (currentTime - lastTime >= 1.0)
+		{
+			std::cout << "fps = " << static_cast<double>(nbFrames) << std::endl;
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-
 	}
 
 	return 0;
 }
-
-

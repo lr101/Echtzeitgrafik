@@ -12,7 +12,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-class GeometryBuffer {
+class GeometryBuffer
+{
 	GLuint m_vao;
 	GLuint m_vbo;
 	GLuint m_ebo;

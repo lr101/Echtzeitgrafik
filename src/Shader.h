@@ -14,7 +14,8 @@
 #include <sstream>
 #include <iostream>
 
-class Shader {
+class Shader
+{
 	GLuint s_vertex;
 	GLuint s_fragment;
 	GLuint s_prog;

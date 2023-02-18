@@ -1,8 +1,10 @@
 #include "MyWindow.h"
 
-MyWindow::MyWindow(int width, int height, const char* name) {
-	this->mat_projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
-	this->mWindow = glfwCreateWindow(width, height, name, NULL, NULL);
+MyWindow::MyWindow(int width, int height, const char* name)
+{
+	this->mat_projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height),
+	                                        0.1f, 1000.0f);
+	this->mWindow = glfwCreateWindow(width, height, name, nullptr, nullptr);
 	this->projection_type = true;
 	this->shader = nullptr;
 
@@ -14,31 +16,38 @@ MyWindow::MyWindow(int width, int height, const char* name) {
 	glEnable(GL_CULL_FACE);
 }
 
-MyWindow::MyWindow(const MyWindow& window) {
+MyWindow::MyWindow(const MyWindow& window)
+{
 	this->mat_projection = window.mat_projection;
 	this->mWindow = window.mWindow;
 	this->projection_type = window.projection_type;
 	this->shader = window.shader;
 }
 
-MyWindow::~MyWindow() {
+MyWindow::~MyWindow()
+{
 	glfwDestroyWindow(this->mWindow);
 	glfwTerminate();
 }
 
-void MyWindow::onKey(int key, int scancode, int actions, int mods) {
-	if (key == GLFW_KEY_ESCAPE && actions == GLFW_PRESS) {
+void MyWindow::onKey(int key, int scancode, int actions, int mods)
+{
+	if (key == GLFW_KEY_ESCAPE && actions == GLFW_PRESS)
+	{
 		glfwSetWindowShouldClose(this->mWindow, GL_TRUE);
 	}
 
-	if (key == GLFW_KEY_SPACE && actions == GLFW_PRESS) {
+	if (key == GLFW_KEY_SPACE && actions == GLFW_PRESS)
+	{
 		int width, height;
 		glfwGetFramebufferSize(this->mWindow, &width, &height);
-		float aspect = (float)width / (float)height;
-		if (this->projection_type) {
+		float aspect = static_cast<float>(width) / static_cast<float>(height);
+		if (this->projection_type)
+		{
 			this->mat_projection = glm::ortho(-1.f * aspect, aspect, -1.f, 1.f, 0.1f, 100.f);
 		}
-		else {
+		else
+		{
 			this->mat_projection = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 1000.0f);
 		}
 		this->projection_type = !this->projection_type;
@@ -46,15 +55,18 @@ void MyWindow::onKey(int key, int scancode, int actions, int mods) {
 	}
 }
 
-void MyWindow::onResize(int width, int height) {
+void MyWindow::onResize(int width, int height)
+{
 	glViewport(0, 0, width, height);
 }
 
-GLFWwindow* MyWindow::getWindow() {
+GLFWwindow* MyWindow::getWindow()
+{
 	return this->mWindow;
 }
 
-void MyWindow::setShader(Shader* shader) {
+void MyWindow::setShader(Shader* shader)
+{
 	this->shader = shader;
 	this->shader->setUniform("u_projection", mat_projection);
 }

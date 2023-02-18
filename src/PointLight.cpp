@@ -23,3 +23,10 @@ void PointLight::setUniforms(Shader& shader)
 	shader.setUniform("u_lightPos", this->lightPos);
 	shader.setUniform("u_lightCol", this->lightCol);
 }
+
+void PointLight::apply_mat(Shader& shader, glm::mat4 mat_model)
+{
+	glm::vec4 tmp_light_pos = mat_model * glm::vec4(this->lightPos, 1.0f);
+	shader.setUniform("u_lightPos", glm::vec3(tmp_light_pos));
+}
+

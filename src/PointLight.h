@@ -10,7 +10,8 @@
 
 #include "Shader.h"
 
-class PointLight {
+class PointLight
+{
 	glm::vec3 lightPos;
 	glm::vec3 lightCol;
 
@@ -20,4 +21,5 @@ public:
 	~PointLight();
 
 	void setUniforms(Shader& shader);
+	void apply_mat(Shader& shader, glm::mat4 mat_model);
 };
