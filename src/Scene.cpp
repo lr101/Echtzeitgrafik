@@ -46,7 +46,6 @@ void Scene::setUniforms(Shader& shader)
 {
 	light->setUniforms(shader);
 	camera->setUniforms(shader);
-	shader.setUniform("u_objectCol", glm::vec3(1.f, .5f, .32f));
 }
 
 void Scene::processCamera(const aiScene* scene)
@@ -64,6 +63,8 @@ void Scene::processMeshes(const aiScene* scene) {
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
 		std::vector<float> vertices;
 		aiMesh* aiMesh = scene->mMeshes[i];
+		aiColor4D* aiColor = aiMesh->mColors[0];
+		glm::vec4 objColor(aiColor->r, aiColor->g, aiColor->b, aiColor->a);
 		for (unsigned int j = 0; j < aiMesh->mNumVertices; j++) {
 			// TODO: Copy the vertex data into the vector "vertices"
 			for (int z = 0; z < 6; z++) {
@@ -93,7 +94,7 @@ void Scene::processMeshes(const aiScene* scene) {
 		const float speed = (i == 0) ? 0.01f : -0.03f;
 
 		// create and save mash
-		this->meshes.push_back(std::make_unique<Mesh>(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f)));
+		this->meshes.push_back(std::make_unique<Mesh>(vertices, indices, speed, glm::vec3(.0f, 1.0f, .0f), objColor));
 	}
 	std::cout << "Num meshes: " << this->meshes.size() << std::endl;
 }
