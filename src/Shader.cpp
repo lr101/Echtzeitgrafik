@@ -1,6 +1,7 @@
 #include "Shader.h"
 
-Shader::Shader(const char* vertexFileName, const char* fragmentFileName) {
+Shader::Shader(const char* vertexFileName, const char* fragmentFileName)
+{
 	glewInit();
 	this->s_vertex = glCreateShader(GL_VERTEX_SHADER);
 	this->s_fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -14,17 +15,19 @@ Shader::Shader(const char* vertexFileName, const char* fragmentFileName) {
 	glDeleteShader(this->s_fragment);
 }
 
-Shader::Shader(const Shader& shader) {
+Shader::Shader(const Shader& shader)
+{
 	this->s_fragment = shader.s_fragment;
 	this->s_prog = shader.s_prog;
 	this->s_vertex = shader.s_vertex;
 }
 
-Shader::~Shader() {
-
+Shader::~Shader()
+{
 }
 
-GLint Shader::getUniform(const char* name) {
+GLint Shader::getUniform(const char* name)
+{
 	GLint location = glGetUniformLocation(this->s_prog, name);
 	glUseProgram(this->s_prog);
 	return location;
@@ -52,11 +55,13 @@ void Shader::setUniform(const char* name, glm::vec4 val)
 
 void Shader::setUniform(const char* name, glm::mat4 val)
 {
-	glUniformMatrix4fv(getUniform(name), 1, GL_FALSE, glm::value_ptr(val));
+	glUniformMatrix4fv(getUniform(name), 1, GL_FALSE, value_ptr(val));
 }
 
-std::string Shader::load(const char* src) {
-	try {
+std::string Shader::load(const char* src)
+{
+	try
+	{
 		// open files
 		std::ifstream shaderFile;
 		shaderFile.open(src);
@@ -74,20 +79,23 @@ std::string Shader::load(const char* src) {
 	return "";
 }
 
-void Shader::compile(GLuint* s, const char* s_src) {
-	glShaderSource(*s, 1, &s_src, NULL);
+void Shader::compile(GLuint* s, const char* s_src)
+{
+	glShaderSource(*s, 1, &s_src, nullptr);
 	glCompileShader(*s);
 	GLint success;
 	GLchar infoLog[512];
 	glGetShaderiv(*s, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(*s, 512, NULL, infoLog);
+	if (!success)
+	{
+		glGetShaderInfoLog(*s, 512, nullptr, infoLog);
 		std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 }
 
 
-void Shader::link() {
+void Shader::link()
+{
 	this->s_prog = glCreateProgram();
 	glAttachShader(this->s_prog, this->s_vertex);
 	glAttachShader(this->s_prog, this->s_fragment);
@@ -95,19 +103,22 @@ void Shader::link() {
 	GLint success;
 	GLchar infoLog[512];
 	glGetProgramiv(this->s_prog, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(this->s_prog, 512, NULL, infoLog);
+	if (!success)
+	{
+		glGetProgramInfoLog(this->s_prog, 512, nullptr, infoLog);
 		std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 }
 
-std::string Shader::getPath(const char* fileName) {
-	try {
+std::string Shader::getPath(const char* fileName)
+{
+	try
+	{
 		return std::string(std::filesystem::current_path().generic_string()).append("/../res/").append(fileName);
 	}
-	catch (std::exception& e) {
+	catch (std::exception& e)
+	{
 		std::cout << "ERROR::SHADER::PATH COULD NOT BE BUILD: " << e.what() << std::endl;
 	}
 	return "";
 }
-

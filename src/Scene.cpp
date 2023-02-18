@@ -62,6 +62,7 @@ void Scene::processCamera(const aiScene* scene)
 void Scene::processMeshes(const aiScene* scene) {
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
 		std::vector<float> vertices;
+		// TODO: Names are shit
 		aiMesh* aiMesh = scene->mMeshes[i];
 		aiColor4D* aiColor = aiMesh->mColors[0];
 		glm::vec4 objColor(aiColor->r, aiColor->g, aiColor->b, aiColor->a);

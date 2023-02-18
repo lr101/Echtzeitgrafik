@@ -1,7 +1,8 @@
 #pragma once
 #include "Shader.h"
 
-class Camera {
+class Camera
+{
 	glm::vec3 cameraPostition;
 	glm::vec3 lookAt;
 

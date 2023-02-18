@@ -27,6 +27,7 @@ Mesh::~Mesh() {}
 
 void Mesh::render(Shader& shader)
 {
+	// TODO move rotation parameter into scene to also rotate light source
 	// Set mesh color
 	shader.setUniform("u_objectCol", this->objColor);
 	// Rotate model matrix

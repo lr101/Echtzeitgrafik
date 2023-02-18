@@ -13,7 +13,7 @@ public:
 	Mesh(const Mesh& mesh);
 	void render(Shader& shader);
 
-	~Mesh();
+	~Mesh() = default;
 
 private:
 	std::vector<float> vertices;
