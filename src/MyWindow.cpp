@@ -22,8 +22,8 @@ MyWindow::MyWindow(const MyWindow& window) {
 }
 
 MyWindow::~MyWindow() {
-	glfwTerminate();
 	glfwDestroyWindow(this->mWindow);
+	glfwTerminate();
 }
 
 void MyWindow::onKey(int key, int scancode, int actions, int mods) {
