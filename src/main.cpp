@@ -19,6 +19,13 @@ const char* fragment_shader = "shader.frag";
 
 int main()
 {
+	std::cout << "Keybindings:\n"
+		<< "[Space]\ttoggle projection between orthographic and perspective\n"
+		<< "[c]\ttoggle face culling\n"
+		<< "[Escape]\tclose the window\n"
+		<< "[W or S]\trotate the camera up or down\n"
+		<< "[A or D]\tdecrease or increase rotation speed\n" << std::endl;
+
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
@@ -35,13 +42,13 @@ int main()
 
 	// build and compile shader
 	Shader shader("shader.vert", "shader.frag");
-
 	m_window.setShader(&shader);
 
 	glewExperimental = GL_TRUE;
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
-	auto scene = Scene("test_scenedae.sec", 10.f, glm::vec3(0.f, 1.f, 0.f));
+	Scene scene("test_scenedae.sec", 10.f, glm::vec3(0.f, 1.f, 0.f));
+	m_window.setScene(&scene);
 
 	// For calculating fps
 	GLdouble last_time = glfwGetTime();

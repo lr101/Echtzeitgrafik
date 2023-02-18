@@ -6,13 +6,16 @@
 #include <glm/ext.hpp>
 
 #include "Shader.h"
+#include "Scene.hpp"
 
 class MyWindow
 {
 	GLFWwindow* m_window_;
-	bool projection_type_;
+	bool projection_type_toggle_;
+	bool cull_face_toggle_;
 	glm::mat4 mat_projection_;
 	Shader* shader_;
+	Scene* scene_;
 
 public:
 	MyWindow(int width, int height, const char* name);
@@ -23,6 +26,7 @@ public:
 	void onResize(int width, int height);
 	GLFWwindow* getWindow() const;
 	void setShader(Shader* shader);
+	void setScene(Scene* scene);
 
 private:
 	static void onKey(GLFWwindow* window, int key, int scancode, int actions, int mods)

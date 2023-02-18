@@ -27,17 +27,21 @@ class Scene
 	std::unique_ptr<Camera> camera_;
 	std::unique_ptr<PointLight> light_;
 	GLfloat rot_amount_ = glm::radians(0.f);
-	GLfloat rot_per_second_;
+	GLfloat rot_amount_per_second_;
 	glm::vec3 rot_mat_;
 	glm::mat4 mat_model_ = glm::mat4(1.f);
 	double old_time_;
 
 public:
-	Scene(std::string file_name, const GLfloat rot_per_second, glm::vec3 rot_mat);
+	Scene(std::string file_name, const GLfloat rot_amount_per_second, glm::vec3 rot_mat);
 	Scene(const Scene& scene);
 	~Scene();
 
 	void render(Shader& shader);
 	void set_uniforms(Shader& shader) const;
+	glm::mat4 get_view() const;
+	void set_view(const glm::mat4 view) const;
+	GLfloat get_rot_amount_per_second() const;
+	void set_rot_amount_per_second(GLfloat rot_amount_per_second);
 
 };

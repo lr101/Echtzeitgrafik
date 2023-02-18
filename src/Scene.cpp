@@ -1,8 +1,8 @@
 #include "Scene.hpp"
 
-Scene::Scene(std::string file_name, const GLfloat rot_per_second, const glm::vec3 rot_mat)
+Scene::Scene(std::string file_name, const GLfloat rot_amount_per_second, const glm::vec3 rot_mat)
 {
-	this->rot_per_second_ = rot_per_second;
+	this->rot_amount_per_second_ = rot_amount_per_second;
 	this->rot_mat_ = rot_mat;
 	this->old_time_ = glfwGetTime();
 
@@ -31,7 +31,7 @@ Scene::Scene(std::string file_name, const GLfloat rot_per_second, const glm::vec
 
 Scene::Scene(const Scene& scene)
 {
-	this->rot_per_second_ = scene.rot_per_second_;
+	this->rot_amount_per_second_ = scene.rot_amount_per_second_;
 	this->rot_mat_ = scene.rot_mat_;
 	this->camera_ = std::make_unique<Camera>(*(scene.camera_));
 	this->light_ = std::make_unique<PointLight>(*(scene.light_));
@@ -54,7 +54,7 @@ void Scene::render(Shader& shader)
 	this->old_time_ = time;
 
 	const glm::mat4 tmp_mat_model = glm::rotate(this->mat_model_, this->rot_amount_, this->rot_mat_);
-	this->rot_amount_ = glm::radians(static_cast<GLfloat>(this->rot_per_second_ * delta_time) + glm::degrees(this->rot_amount_));
+	this->rot_amount_ = glm::radians(static_cast<GLfloat>(this->rot_amount_per_second_ * delta_time) + glm::degrees(this->rot_amount_));
 	this->light_->apply_mat(shader, tmp_mat_model);
 	for (auto const& i : meshes_)
 	{
@@ -67,6 +67,27 @@ void Scene::set_uniforms(Shader& shader) const
 	light_->set_uniforms(shader);
 	camera_->set_uniforms(shader);
 }
+
+glm::mat4 Scene::get_view() const
+{
+	return this->camera_->get_view();
+}
+
+void Scene::set_view(const glm::mat4 view) const
+{
+	this->camera_->set_view(view);
+}
+
+GLfloat Scene::get_rot_amount_per_second() const
+{
+	return this->rot_amount_per_second_;
+}
+
+void Scene::set_rot_amount_per_second(GLfloat rot_amount_per_second)
+{
+	this->rot_amount_per_second_ = rot_amount_per_second;
+}
+
 
 void Scene::process_camera(const aiScene* scene)
 {
