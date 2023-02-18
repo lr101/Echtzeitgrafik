@@ -26,7 +26,6 @@ class GeometryBuffer {
 	void bindEBO();
 	void unbindVAO();
 	void unbindVBO();
-	void unbindEBO();
 
 public:
 	GeometryBuffer(GLfloat vertices[], GLuint v_size, GLuint indices[], GLuint i_size, GLuint vertexAmount);
